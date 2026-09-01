@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Toán Vui — Ôn tập Toán tiểu học</title>
-<meta name="description" content="Toán Vui giúp bé tiểu học ôn tập bảng cửu chương, cộng trừ và xem giờ đồng hồ qua các bài trắc nghiệm vui nhộn.">
+<title>Hồ sơ của bé — Toán Vui</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧮</text></svg>">
 <!-- Google tag (gtag.js): chỉ tải trên website production. -->
 <script>
@@ -31,16 +30,17 @@
 </head>
 <body>
 
-<main class="container" style="padding-top: 60px;">
-  <div class="center" style="margin-bottom: 28px;">
-    <div style="font-size: 4rem;">🧮✨</div>
-    <h1>Toán Vui</h1>
-    <p class="subtitle">Cùng bé ôn tập Toán thật vui mỗi ngày nhé!</p>
-  </div>
+<header class="app-header">
+  <a href="menu.html" class="logo">🧮 Toán Vui</a>
+</header>
 
-  <div class="card" id="profile-form-card">
-    <h2 class="center">Bé tên gì nè? 😊</h2>
-    <form id="profile-form">
+<main class="container">
+  <a href="menu.html" class="breadcrumb">← Về menu chính</a>
+  <h1 class="center">Hồ sơ của bé 🧸</h1>
+
+  <div class="card">
+    <div class="avatar-preview" id="avatar-preview"></div>
+    <form id="profile-edit-form">
       <div class="field">
         <label for="child-name">Tên của bé</label>
         <input type="text" id="child-name" placeholder="Ví dụ: Bin" maxlength="30" required>
@@ -50,21 +50,16 @@
         <input type="number" id="child-age" placeholder="Ví dụ: 8" min="5" max="12" required>
       </div>
       <div class="field">
-        <label>Bé chọn một hình đại diện nhé</label>
+        <label>Chọn hình đại diện</label>
         <div class="avatar-grid" id="avatar-grid"></div>
       </div>
-      <button type="submit" class="btn btn-primary btn-block">Bắt đầu học 🚀</button>
+      <button type="submit" class="btn btn-primary btn-block">Lưu thay đổi ✅</button>
     </form>
   </div>
 
-  <div class="card center" id="welcome-back-card" style="display:none;">
-    <div style="font-size: 3rem;">👋</div>
-    <h2 id="welcome-back-text"></h2>
-    <p class="subtitle">Sẵn sàng ôn tập tiếp chưa nào?</p>
-    <div class="btn-row" style="margin-top: 16px;">
-      <a href="menu.html" class="btn btn-primary">Vào học ngay 🎈</a>
-      <button id="switch-profile-btn" class="btn btn-outline">Đổi bé khác</button>
-    </div>
+  <div class="card center">
+    <p class="subtitle">Muốn đổi sang bé khác dùng máy này?</p>
+    <button id="switch-profile-btn" class="btn btn-outline">Đổi bé khác</button>
   </div>
 </main>
 
@@ -72,33 +67,29 @@
 
 <script src="js/profile.js"></script>
 <script>
-  let selectedAvatar = AVATAR_OPTIONS[0];
+  const profile = requireProfileOrRedirect();
+  let selectedAvatar = profile ? profile.avatar : AVATAR_OPTIONS[0];
+
+  document.getElementById('avatar-preview').textContent = selectedAvatar;
+  document.getElementById('child-name').value = profile.name;
+  document.getElementById('child-age').value = profile.age;
 
   const avatarGridEl = document.getElementById('avatar-grid');
   AVATAR_OPTIONS.forEach((emoji) => {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = 'avatar-choice';
+    btn.className = 'avatar-choice' + (emoji === selectedAvatar ? ' selected' : '');
     btn.textContent = emoji;
     btn.addEventListener('click', () => {
       selectedAvatar = emoji;
       avatarGridEl.querySelectorAll('.avatar-choice').forEach((b) => b.classList.remove('selected'));
       btn.classList.add('selected');
+      document.getElementById('avatar-preview').textContent = selectedAvatar;
     });
     avatarGridEl.appendChild(btn);
   });
-  avatarGridEl.firstElementChild.classList.add('selected');
 
-  (function init() {
-    const profile = getProfile();
-    if (profile) {
-      document.getElementById('profile-form-card').style.display = 'none';
-      document.getElementById('welcome-back-card').style.display = 'block';
-      document.getElementById('welcome-back-text').textContent = `Chào mừng bé ${profile.name} quay lại!`;
-    }
-  })();
-
-  document.getElementById('profile-form').addEventListener('submit', function (e) {
+  document.getElementById('profile-edit-form').addEventListener('submit', function (e) {
     e.preventDefault();
     const name = document.getElementById('child-name').value.trim();
     const age = parseInt(document.getElementById('child-age').value, 10);
@@ -107,10 +98,9 @@
     window.location.href = 'menu.html';
   });
 
-  document.getElementById('switch-profile-btn')?.addEventListener('click', function () {
+  document.getElementById('switch-profile-btn').addEventListener('click', function () {
     clearProfile();
-    document.getElementById('welcome-back-card').style.display = 'none';
-    document.getElementById('profile-form-card').style.display = 'block';
+    window.location.href = 'index.html';
   });
 </script>
 </body>

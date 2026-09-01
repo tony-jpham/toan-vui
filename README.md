@@ -9,18 +9,18 @@ Website ôn tập môn Toán cho học sinh tiểu học Việt Nam (lớp 1 →
 
 ## Tính năng
 
-1. **Bảng cửu chương** — học bảng nhân 1–9, luyện tập trắc nghiệm (1 bảng hoặc trộn nhiều bảng).
+1. **Bảng cửu chương** — luyện tập trắc nghiệm nhân/chia trong phạm vi 1–9 (1 bảng hoặc trộn nhiều bảng).
 2. **Cộng trừ trong phạm vi 200** (không số âm) — luyện tính nhẩm trắc nghiệm, 3 mức độ khó, có bài không giới hạn thời gian và bài giới hạn thời gian ("Thử Thách Tốc Độ").
 3. **Xem giờ đồng hồ kim** — trắc nghiệm đọc giờ, phút chẵn.
-4. **Hồ sơ bé** — nhập tên + tuổi trước khi học, lưu `localStorage`, dùng để cá nhân hoá lời chào.
+4. **Hồ sơ bé** — nhập tên, tuổi, chọn avatar trước khi học; xem/sửa lại bất kỳ lúc nào; lưu `localStorage`, dùng để cá nhân hoá lời chào.
 
-**Ngoài phạm vi hiện tại**: đăng nhập/tài khoản, lưu lịch sử điểm nhiều lần làm bài, backend/server, âm thanh.
+**Ngoài phạm vi hiện tại**: đăng nhập/tài khoản, lưu lịch sử điểm nhiều lần làm bài, backend/server.
 
 ## Công nghệ
 
 - HTML5 + CSS3 + JavaScript (ES6+), không framework, không bundler.
 - Kiến trúc **multi-page**: mỗi màn hình là một file `.html`, dùng chung `css/` và `js/` qua `<link>`/`<script>`.
-- Lưu trữ: `localStorage` (hồ sơ bé: tên, tuổi).
+- Lưu trữ: `localStorage` (hồ sơ bé: tên, tuổi, avatar).
 - Triển khai: GitHub Pages, nhánh `main`, thư mục gốc.
 - Thống kê: Google Analytics (GA4).
 
@@ -28,10 +28,10 @@ Website ôn tập môn Toán cho học sinh tiểu học Việt Nam (lớp 1 →
 
 ```
 toan-vui/
-├── index.html                    # Trang chào — nhập tên/tuổi
-├── menu.html                     # Menu chính, điều hướng tới 5 chế độ luyện tập
+├── index.html                    # Trang chào — nhập tên/tuổi/avatar
+├── menu.html                     # Menu chính, điều hướng tới 4 chế độ luyện tập
+├── profile.html                  # Xem & sửa hồ sơ bé (tên, tuổi, avatar)
 ├── cuu-chuong/
-│   ├── hoc.html                   # Xem bảng cửu chương 1–9
 │   └── luyen-tap.html             # Trắc nghiệm 1 bảng / trộn nhiều bảng
 ├── cong-tru/
 │   ├── luyen-tap.html             # 15 câu, Dễ/Vừa/Khó, không giới hạn giờ
@@ -45,6 +45,7 @@ toan-vui/
 │   ├── profile.js                 # Quản lý hồ sơ bé trong localStorage
 │   ├── quiz-engine.js             # Engine trắc nghiệm dùng chung: render câu hỏi, chấm điểm, auto-advance, kết quả
 │   ├── exit-confirm.js            # Nút thoát bài + popup xác nhận, dùng chung cho mọi trang quiz
+│   ├── sound.js                   # Âm thanh đúng/sai/hoàn thành, sinh bằng Web Audio API
 │   ├── cuu-chuong.js              # Sinh câu hỏi nhân/chia + đáp án nhiễu
 │   ├── cong-tru.js                # Sinh câu hỏi cộng/trừ theo độ khó + đáp án nhiễu
 │   ├── xem-gio.js                 # Sinh câu hỏi đọc giờ + đáp án nhiễu
@@ -56,8 +57,7 @@ toan-vui/
 
 ### I. Bảng cửu chương
 
-- **Học bảng** (`cuu-chuong/hoc.html`): chọn 1 bảng (1–9) → hiển thị đầy đủ 10 phép nhân (`n × 1` đến `n × 10`).
-- **Luyện tập — 1 bảng**: 10 câu trắc nghiệm 4 đáp án, lấy đúng 10 phép tính của bảng đã chọn, xáo trộn thứ tự.
+- **Luyện tập — 1 bảng** (`cuu-chuong/luyen-tap.html`): 10 câu trắc nghiệm 4 đáp án, lấy đúng 10 phép tính của bảng đã chọn, xáo trộn thứ tự.
 - **Luyện tập — trộn nhiều bảng**: chọn ≥ 3 bảng, 15 câu, gồm cả phép nhân và phép chia tương ứng, chia đều số câu cho mỗi bảng đã chọn.
 - **Đáp án nhiễu có chủ đích**: ví dụ đúng là `7 × 8 = 56` → đáp án nhiễu gồm các lỗi thường gặp: nhầm bảng liền kề (`7×7=49`, `7×9=63`), lệch một đơn vị của tích (`57`), nhầm phép cộng thay vì nhân (`15`).
 
@@ -88,12 +88,14 @@ Căn cứ: nghiên cứu về fact fluency khuyến nghị ~2–4 giây/phép t�
 
 ### IV. Hồ sơ bé
 
-- `index.html`: form nhập **tên** + **số tuổi**, nút "Bắt đầu học" → lưu `localStorage` (key `toanvui_profile`).
-- Lần sau mở lại: chào bằng tên bé, có nút "Đổi bé khác" để nhập lại.
+- `index.html`: form nhập **tên** + **số tuổi** + chọn **avatar** (12 emoji động vật dễ thương: 🐻🐰🐱🐶🦊🐼🦁🐸🐵🦄🐷🐨), nút "Bắt đầu học" → lưu `localStorage` (key `toanvui_profile = { name, age, avatar }`).
+- `profile.html`: xem lại và sửa hồ sơ (tên, tuổi, avatar) bất kỳ lúc nào, có preview avatar lớn ở đầu trang. Truy cập qua badge avatar ở góc phải header của `menu.html`.
+- Lần sau mở lại `index.html`: chào bằng tên bé, có nút "Đổi bé khác" để xoá hồ sơ và nhập lại từ đầu (cũng có ở `profile.html`).
 - Mọi trang luyện tập đều gọi `requireProfileOrRedirect()` — chưa có hồ sơ sẽ tự chuyển về `index.html`.
 
 ### V. Trải nghiệm làm bài (dùng chung qua `quiz-engine.js`)
 
+- **Âm thanh phản hồi** (`sound.js`): sinh bằng Web Audio API, không dùng file audio ngoài — 2 nốt đi lên khi trả lời đúng, 1 nốt trầm ngắn khi trả lời sai, chuỗi 4 nốt fanfare khi hoàn thành bài.
 - **Auto-advance**: sau khi chọn đáp án, tự động chuyển câu tiếp theo sau **3 giây**.
 - **Nút "Tiếp tục"**: xuất hiện ngay sau khi trả lời, hiển thị số giây đếm ngược (`Tiếp tục (3) →`), bấm vào chuyển câu ngay không cần chờ.
 - **Thoát bài** (`exit-confirm.js`): nút ✕ trong thanh trạng thái mở popup xác nhận "Bé muốn thoát bài không?" — chọn "Làm tiếp" để đóng popup, hoặc "Thoát bài" để dừng mọi timer và quay về menu chính.
@@ -133,6 +135,8 @@ Mỗi trang `.html` tải GA4 (`gtag.js`) có điều kiện — chỉ chạy kh
 
 ID GA4 thật được cấu hình trực tiếp trong từng file `.html` (không lưu trong README công khai). Property GA4 của toan-vui tách riêng, không dùng chung với các site khác.
 
+**Không** gửi tên, tuổi, hay bất kỳ dữ liệu định danh nào của bé vào GA4 — chỉ dùng `gtag('config', ...)` mặc định. Đây là quyết định có chủ đích: GA cấm gửi PII (personally identifiable information) trong Điều khoản dịch vụ, và tên trẻ em là dữ liệu nhạy cảm không cần thiết cho mục đích thống kê sản phẩm.
+
 ## Quyết định thiết kế đã chốt
 
 - Kiến trúc multi-page HTML thuần, không framework/build tool.
@@ -146,5 +150,4 @@ ID GA4 thật được cấu hình trực tiếp trong từng file `.html` (khô
 ## Việc cần làm tiếp (backlog)
 
 - [ ] Kiểm thử trên thiết bị iPad/điện thoại thật (ngoài trình duyệt giả lập).
-- [ ] Cân nhắc thêm hiệu ứng/âm thanh nhẹ khi trả lời đúng/sai (tuỳ chọn, chưa làm).
 - [ ] Rà soát lại mốc thời gian Thử Thách Tốc Độ sau khi có phản hồi thực tế từ bé dùng thử.

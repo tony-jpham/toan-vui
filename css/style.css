@@ -83,6 +83,30 @@ a {
   color: var(--ink-soft);
 }
 
+.app-header .header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  border-radius: 50%;
+  background: var(--bg-soft);
+  font-size: 1.5rem;
+  text-decoration: none;
+  box-shadow: var(--card-shadow);
+}
+
+.avatar-link:active {
+  transform: scale(0.94);
+}
+
 .card {
   background: var(--card-bg);
   border-radius: var(--radius-lg);

@@ -96,6 +96,7 @@ class QuizEngine {
       this.score++;
       btn.classList.add('correct');
       this.showFeedback(true);
+      ToanVuiSound.playCorrect();
     } else {
       btn.classList.add('wrong');
       allBtns.forEach((b) => {
@@ -104,6 +105,7 @@ class QuizEngine {
         }
       });
       this.showFeedback(false);
+      ToanVuiSound.playWrong();
     }
 
     this.startAutoAdvance();
@@ -151,6 +153,7 @@ class QuizEngine {
     this.currentIndex++;
     if (this.currentIndex >= this.questions.length) {
       if (this.progressFill) this.progressFill.style.width = '100%';
+      ToanVuiSound.playFinish();
       this.onFinish(this.score, this.questions.length);
     } else {
       this.renderQuestion();

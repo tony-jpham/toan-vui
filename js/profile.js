@@ -1,16 +1,21 @@
 const PROFILE_KEY = 'toanvui_profile';
+const DEFAULT_AVATAR = '🐻';
+const AVATAR_OPTIONS = ['🐻', '🐰', '🐱', '🐶', '🦊', '🐼', '🦁', '🐸', '🐵', '🦄', '🐷', '🐨'];
 
 function getProfile() {
   try {
     const raw = localStorage.getItem(PROFILE_KEY);
-    return raw ? JSON.parse(raw) : null;
+    if (!raw) return null;
+    const profile = JSON.parse(raw);
+    if (!profile.avatar) profile.avatar = DEFAULT_AVATAR;
+    return profile;
   } catch (e) {
     return null;
   }
 }
 
-function saveProfile(name, age) {
-  localStorage.setItem(PROFILE_KEY, JSON.stringify({ name, age }));
+function saveProfile(name, age, avatar) {
+  localStorage.setItem(PROFILE_KEY, JSON.stringify({ name, age, avatar: avatar || DEFAULT_AVATAR }));
 }
 
 function clearProfile() {
@@ -38,4 +43,12 @@ function renderGreeting(elementId) {
   if (!el) return;
   const profile = getProfile();
   el.textContent = profile ? `Chào bé ${profile.name}! 👋` : '';
+}
+
+function renderAvatarLink(elementId) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  const profile = getProfile();
+  el.textContent = profile ? profile.avatar : DEFAULT_AVATAR;
+  el.href = getRootPath() + 'profile.html';
 }

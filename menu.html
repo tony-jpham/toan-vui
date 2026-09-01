@@ -32,7 +32,10 @@
 
 <header class="app-header">
   <a href="index.html" class="logo">🧮 Toán Vui</a>
-  <span class="greeting" id="greeting"></span>
+  <div class="header-right">
+    <span class="greeting" id="greeting"></span>
+    <a href="profile.html" class="avatar-link" id="avatar-link" aria-label="Hồ sơ của bé"></a>
+  </div>
 </header>
 
 <main class="container">
@@ -41,30 +44,25 @@
   </div>
 
   <div class="menu-grid">
-    <a href="cuu-chuong/hoc.html" class="menu-card">
-      <div class="icon">📖</div>
-      <div class="title">Học bảng cửu chương</div>
-      <div class="desc">Xem bảng nhân 1–9</div>
-    </a>
     <a href="cuu-chuong/luyen-tap.html" class="menu-card">
       <div class="icon">✖️</div>
       <div class="title">Luyện cửu chương</div>
-      <div class="desc">Trắc nghiệm nhân chia</div>
+      <div class="desc">15 câu, nhân và chia</div>
     </a>
     <a href="cong-tru/luyen-tap.html" class="menu-card">
       <div class="icon">➕</div>
-      <div class="title">Cộng trừ</div>
-      <div class="desc">Luyện tập không giới hạn giờ</div>
+      <div class="title">Luyện cộng trừ</div>
+      <div class="desc">15 câu, không giới hạn giờ</div>
     </a>
     <a href="cong-tru/thu-thach-toc-do.html" class="menu-card">
       <div class="icon">⚡</div>
       <div class="title">Thử Thách Tốc Độ</div>
-      <div class="desc">Cộng trừ có tính giờ</div>
+      <div class="desc">15 câu, có tính giờ</div>
     </a>
     <a href="xem-gio/luyen-tap.html" class="menu-card">
       <div class="icon">🕐</div>
-      <div class="title">Xem giờ đồng hồ</div>
-      <div class="desc">Đọc giờ trên đồng hồ kim</div>
+      <div class="title">Luyện xem giờ</div>
+      <div class="desc">10 câu, đồng hồ kim</div>
     </a>
   </div>
 </main>
@@ -75,6 +73,7 @@
 <script>
   requireProfileOrRedirect();
   renderGreeting('greeting');
+  renderAvatarLink('avatar-link');
 </script>
 </body>
 </html>
