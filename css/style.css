@@ -1,0 +1,255 @@
+:root {
+  --bg: #FFF8EC;
+  --bg-soft: #FFEFD5;
+  --ink: #3A2E2E;
+  --ink-soft: #6B5B5B;
+  --primary: #FF8A5B;
+  --primary-dark: #E96E3D;
+  --secondary: #4EA8DE;
+  --secondary-dark: #3B8FC4;
+  --success: #4CAF50;
+  --success-bg: #E8F5E9;
+  --error: #E85D5D;
+  --error-bg: #FDEAEA;
+  --card-bg: #FFFFFF;
+  --card-shadow: 0 6px 18px rgba(58, 46, 46, 0.08);
+  --radius-lg: 24px;
+  --radius-md: 16px;
+  --radius-sm: 10px;
+  --font-heading: 'Baloo 2', 'Quicksand', system-ui, sans-serif;
+  --font-body: 'Quicksand', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-heading);
+  margin: 0 0 0.5em;
+  color: var(--ink);
+}
+
+p {
+  line-height: 1.6;
+  margin: 0 0 1em;
+}
+
+a {
+  color: inherit;
+}
+
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.app-header .logo {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.app-header .greeting {
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--card-shadow);
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.center {
+  text-align: center;
+}
+
+.subtitle {
+  color: var(--ink-soft);
+  font-size: 1rem;
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+@media (max-width: 480px) {
+  .menu-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.menu-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 28px 16px;
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--card-shadow);
+  text-decoration: none;
+  color: var(--ink);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  min-height: 44px;
+}
+
+.menu-card:active {
+  transform: scale(0.97);
+}
+
+.menu-card .icon {
+  font-size: 2.6rem;
+}
+
+.menu-card .title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.menu-card .desc {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 12px 28px;
+  border-radius: 999px;
+  border: none;
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.12);
+}
+
+.btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 rgba(0,0,0,0.12);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.btn-secondary {
+  background: var(--secondary);
+  color: #fff;
+}
+
+.btn-outline {
+  background: #fff;
+  color: var(--ink);
+  border: 2px solid var(--bg-soft);
+  box-shadow: none;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+input[type="text"], input[type="number"] {
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 18px;
+  font-size: 1.1rem;
+  font-family: var(--font-body);
+  border: 2px solid var(--bg-soft);
+  border-radius: var(--radius-md);
+  background: #fff;
+  color: var(--ink);
+}
+
+input[type="text"]:focus, input[type="number"]:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--ink-soft);
+}
+
+.field {
+  margin-bottom: 18px;
+}
+
+.breadcrumb {
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: var(--bg-soft);
+  color: var(--primary-dark);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+footer.app-footer {
+  text-align: center;
+  padding: 20px;
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+}

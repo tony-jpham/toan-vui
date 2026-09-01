@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Thử Thách Tốc Độ — Toán Vui</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧮</text></svg>">
+<!-- Google tag (gtag.js): chỉ tải trên website production. -->
+<script>
+  if (
+    location.hostname === 'tony-jpham.github.io' &&
+    location.pathname.startsWith('/toan-vui/')
+  ) {
+    var gaScript = document.createElement('script');
+    gaScript.async = true;
+    gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-WPFRJK3EH4';
+    document.head.appendChild(gaScript);
+
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function(){window.dataLayer.push(arguments);};
+    window.gtag('js', new Date());
+    window.gtag('config', 'G-WPFRJK3EH4');
+  }
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+
+<header class="app-header">
+  <a href="../menu.html" class="logo">🧮 Toán Vui</a>
+  <span class="greeting" id="greeting"></span>
+</header>
+
+<main class="container">
+
+  <section id="setup-section">
+    <a href="../menu.html" class="breadcrumb">← Về menu chính</a>
+    <h1 class="center">Thử Thách Tốc Độ ⚡</h1>
+    <p class="subtitle center">Bé đã sẵn sàng tăng tốc chưa? Thời gian đang chạy đó nha! 🏃</p>
+
+    <div class="card">
+      <p>15 câu cộng trừ, có tính giờ cho cả bài. Chọn độ khó nhé:</p>
+      <div class="btn-row">
+        <button class="btn btn-outline" data-level="vua">🙂 Vừa (3 phút 45 giây)</button>
+        <button class="btn btn-outline" data-level="kho">😤 Khó (3 phút)</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="quiz-section" style="display:none;">
+    <div class="quiz-meta">
+      <span>Câu <span id="q-current">1</span>/<span id="q-total">15</span></span>
+      <span class="timer" id="timer-display">03:45</span>
+    </div>
+    <div class="progress-bar"><div class="progress-bar-fill" id="progress-fill"></div></div>
+    <div class="card question-box">
+      <div class="question-text" id="q-prompt"></div>
+    </div>
+    <div id="q-feedback" class="feedback-banner" style="display:none;"></div>
+    <div class="answers-grid" id="q-answers"></div>
+  </section>
+
+  <section id="result-section" style="display:none;">
+    <div class="card center">
+      <div style="font-size: 3rem;" id="result-emoji">🎉</div>
+      <h2 id="result-title">Hoàn thành!</h2>
+      <div class="result-score" id="result-score"></div>
+      <p class="result-message" id="result-message"></p>
+      <div class="btn-row">
+        <button id="retry-btn" class="btn btn-primary">Làm lại</button>
+        <a href="../menu.html" class="btn btn-outline">Về menu chính</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="app-footer">Toán Vui 🧮 — Học mà chơi, chơi mà học</footer>
+
+<script src="../js/profile.js"></script>
+<script src="../js/quiz-engine.js"></script>
+<script src="../js/cong-tru.js"></script>
+<script>
+  requireProfileOrRedirect();
+  renderGreeting('greeting');
+
+  let currentLevel = null;
+  let engine = null;
+  let timerInterval = null;
+  let secondsLeft = 0;
+  let timeUp = false;
+
+  document.querySelectorAll('[data-level]').forEach((btn) => {
+    btn.addEventListener('click', () => launchQuiz(btn.dataset.level));
+  });
+
+  function formatTime(s) {
+    const m = Math.floor(s / 60).toString().padStart(2, '0');
+    const sec = (s % 60).toString().padStart(2, '0');
+    return `${m}:${sec}`;
+  }
+
+  function launchQuiz(level) {
+    currentLevel = level;
+    timeUp = false;
+    const questions = buildCongTruQuiz(level, 15);
+    secondsLeft = SPEED_CHALLENGE_SECONDS[level];
+
+    document.getElementById('setup-section').style.display = 'none';
+    document.getElementById('result-section').style.display = 'none';
+    document.getElementById('quiz-section').style.display = 'block';
+    updateTimerDisplay();
+
+    engine = new QuizEngine({
+      questions,
+      containerIds: {
+        progressFill: 'progress-fill',
+        current: 'q-current',
+        total: 'q-total',
+        prompt: 'q-prompt',
+        answers: 'q-answers',
+        feedback: 'q-feedback',
+      },
+      onFinish: (score, total) => finishQuiz(score, total),
+    });
+    engine.start();
+
+    clearInterval(timerInterval);
+    timerInterval = setInterval(tick, 1000);
+  }
+
+  function tick() {
+    secondsLeft--;
+    updateTimerDisplay();
+    if (secondsLeft <= 0) {
+      clearInterval(timerInterval);
+      timeUp = true;
+      finishQuiz(engine.score, engine.questions.length);
+    }
+  }
+
+  function updateTimerDisplay() {
+    const el = document.getElementById('timer-display');
+    el.textContent = formatTime(Math.max(secondsLeft, 0));
+    el.classList.toggle('warning', secondsLeft <= 20);
+  }
+
+  function finishQuiz(score, total) {
+    clearInterval(timerInterval);
+    document.getElementById('quiz-section').style.display = 'none';
+    document.getElementById('result-section').style.display = 'block';
+    const scaledScore = Math.round((score / total) * 10);
+
+    document.getElementById('result-emoji').textContent = timeUp ? '⏰' : '🎉';
+    document.getElementById('result-title').textContent = timeUp ? 'Hết giờ rồi!' : 'Hoàn thành!';
+
+    renderResultScreen({
+      score,
+      total,
+      scaledScore,
+      containerIds: { score: 'result-score', message: 'result-message' },
+      message: timeUp
+        ? `Bé làm được ${score}/${total} câu trước khi hết giờ. Luyện thêm để nhanh hơn nhé! ⚡`
+        : undefined,
+    });
+  }
+
+  document.getElementById('retry-btn').addEventListener('click', () => launchQuiz(currentLevel));
+</script>
+</body>
+</html>

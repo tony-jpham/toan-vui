@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Toán Vui — Menu chính</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧮</text></svg>">
+<!-- Google tag (gtag.js): chỉ tải trên website production. -->
+<script>
+  if (
+    location.hostname === 'tony-jpham.github.io' &&
+    location.pathname.startsWith('/toan-vui/')
+  ) {
+    var gaScript = document.createElement('script');
+    gaScript.async = true;
+    gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-WPFRJK3EH4';
+    document.head.appendChild(gaScript);
+
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function(){window.dataLayer.push(arguments);};
+    window.gtag('js', new Date());
+    window.gtag('config', 'G-WPFRJK3EH4');
+  }
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+<header class="app-header">
+  <a href="index.html" class="logo">🧮 Toán Vui</a>
+  <span class="greeting" id="greeting"></span>
+</header>
+
+<main class="container">
+  <div class="center">
+    <h1>Hôm nay bé muốn học gì? 🌈</h1>
+  </div>
+
+  <div class="menu-grid">
+    <a href="cuu-chuong/hoc.html" class="menu-card">
+      <div class="icon">📖</div>
+      <div class="title">Học bảng cửu chương</div>
+      <div class="desc">Xem bảng nhân 1–9</div>
+    </a>
+    <a href="cuu-chuong/luyen-tap.html" class="menu-card">
+      <div class="icon">✖️</div>
+      <div class="title">Luyện cửu chương</div>
+      <div class="desc">Trắc nghiệm nhân chia</div>
+    </a>
+    <a href="cong-tru/luyen-tap.html" class="menu-card">
+      <div class="icon">➕</div>
+      <div class="title">Cộng trừ</div>
+      <div class="desc">Luyện tập không giới hạn giờ</div>
+    </a>
+    <a href="cong-tru/thu-thach-toc-do.html" class="menu-card">
+      <div class="icon">⚡</div>
+      <div class="title">Thử Thách Tốc Độ</div>
+      <div class="desc">Cộng trừ có tính giờ</div>
+    </a>
+    <a href="xem-gio/luyen-tap.html" class="menu-card">
+      <div class="icon">🕐</div>
+      <div class="title">Xem giờ đồng hồ</div>
+      <div class="desc">Đọc giờ trên đồng hồ kim</div>
+    </a>
+  </div>
+</main>
+
+<footer class="app-footer">Toán Vui 🧮 — Học mà chơi, chơi mà học</footer>
+
+<script src="js/profile.js"></script>
+<script>
+  requireProfileOrRedirect();
+  renderGreeting('greeting');
+</script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Luyện cộng trừ — Toán Vui</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧮</text></svg>">
+<!-- Google tag (gtag.js): chỉ tải trên website production. -->
+<script>
+  if (
+    location.hostname === 'tony-jpham.github.io' &&
+    location.pathname.startsWith('/toan-vui/')
+  ) {
+    var gaScript = document.createElement('script');
+    gaScript.async = true;
+    gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-WPFRJK3EH4';
+    document.head.appendChild(gaScript);
+
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function(){window.dataLayer.push(arguments);};
+    window.gtag('js', new Date());
+    window.gtag('config', 'G-WPFRJK3EH4');
+  }
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+
+<header class="app-header">
+  <a href="../menu.html" class="logo">🧮 Toán Vui</a>
+  <span class="greeting" id="greeting"></span>
+</header>
+
+<main class="container">
+
+  <section id="setup-section">
+    <a href="../menu.html" class="breadcrumb">← Về menu chính</a>
+    <h1 class="center">Luyện cộng trừ ➕➖</h1>
+    <p class="subtitle center">15 câu, không giới hạn thời gian. Chọn độ khó bé nhé!</p>
+
+    <div class="card">
+      <div class="btn-row">
+        <button class="btn btn-outline" data-level="de">😊 Dễ</button>
+        <button class="btn btn-outline" data-level="vua">🙂 Vừa</button>
+        <button class="btn btn-outline" data-level="kho">😤 Khó</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="quiz-section" style="display:none;">
+    <div class="quiz-meta">
+      <span>Câu <span id="q-current">1</span>/<span id="q-total">15</span></span>
+      <span id="quiz-mode-label"></span>
+    </div>
+    <div class="progress-bar"><div class="progress-bar-fill" id="progress-fill"></div></div>
+    <div class="card question-box">
+      <div class="question-text" id="q-prompt"></div>
+    </div>
+    <div id="q-feedback" class="feedback-banner" style="display:none;"></div>
+    <div class="answers-grid" id="q-answers"></div>
+  </section>
+
+  <section id="result-section" style="display:none;">
+    <div class="card center">
+      <div style="font-size: 3rem;">🎉</div>
+      <h2>Hoàn thành!</h2>
+      <div class="result-score" id="result-score"></div>
+      <p class="result-message" id="result-message"></p>
+      <div class="btn-row">
+        <button id="retry-btn" class="btn btn-primary">Làm lại</button>
+        <a href="../menu.html" class="btn btn-outline">Về menu chính</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="app-footer">Toán Vui 🧮 — Học mà chơi, chơi mà học</footer>
+
+<script src="../js/profile.js"></script>
+<script src="../js/quiz-engine.js"></script>
+<script src="../js/cong-tru.js"></script>
+<script>
+  requireProfileOrRedirect();
+  renderGreeting('greeting');
+
+  const levelLabels = { de: 'Dễ 😊', vua: 'Vừa 🙂', kho: 'Khó 😤' };
+  let currentLevel = null;
+
+  document.querySelectorAll('[data-level]').forEach((btn) => {
+    btn.addEventListener('click', () => launchQuiz(btn.dataset.level));
+  });
+
+  function launchQuiz(level) {
+    currentLevel = level;
+    const questions = buildCongTruQuiz(level, 15);
+
+    document.getElementById('setup-section').style.display = 'none';
+    document.getElementById('result-section').style.display = 'none';
+    document.getElementById('quiz-section').style.display = 'block';
+    document.getElementById('quiz-mode-label').textContent = levelLabels[level];
+
+    const engine = new QuizEngine({
+      questions,
+      containerIds: {
+        progressFill: 'progress-fill',
+        current: 'q-current',
+        total: 'q-total',
+        prompt: 'q-prompt',
+        answers: 'q-answers',
+        feedback: 'q-feedback',
+      },
+      onFinish: (score, total) => showResult(score, total),
+    });
+    engine.start();
+  }
+
+  function showResult(score, total) {
+    document.getElementById('quiz-section').style.display = 'none';
+    document.getElementById('result-section').style.display = 'block';
+    const scaledScore = Math.round((score / total) * 10);
+    renderResultScreen({
+      score,
+      total,
+      scaledScore,
+      containerIds: { score: 'result-score', message: 'result-message' },
+    });
+  }
+
+  document.getElementById('retry-btn').addEventListener('click', () => launchQuiz(currentLevel));
+</script>
+</body>
+</html>

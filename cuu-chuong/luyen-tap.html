@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Luyện tập cửu chương — Toán Vui</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧮</text></svg>">
+<!-- Google tag (gtag.js): chỉ tải trên website production. -->
+<script>
+  if (
+    location.hostname === 'tony-jpham.github.io' &&
+    location.pathname.startsWith('/toan-vui/')
+  ) {
+    var gaScript = document.createElement('script');
+    gaScript.async = true;
+    gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-WPFRJK3EH4';
+    document.head.appendChild(gaScript);
+
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function(){window.dataLayer.push(arguments);};
+    window.gtag('js', new Date());
+    window.gtag('config', 'G-WPFRJK3EH4');
+  }
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+
+<header class="app-header">
+  <a href="../menu.html" class="logo">🧮 Toán Vui</a>
+  <span class="greeting" id="greeting"></span>
+</header>
+
+<main class="container">
+
+  <!-- Bước chọn chế độ -->
+  <section id="setup-section">
+    <a href="../menu.html" class="breadcrumb">← Về menu chính</a>
+    <h1 class="center">Luyện tập cửu chương ✖️➗</h1>
+
+    <div class="card">
+      <h2>1. Ôn 1 bảng cửu chương</h2>
+      <p class="subtitle">10 câu trắc nghiệm, xáo trộn thứ tự phép tính trong bảng.</p>
+      <div class="option-grid" id="single-table-buttons"></div>
+    </div>
+
+    <div class="card">
+      <h2>2. Ôn trộn nhiều bảng</h2>
+      <p class="subtitle">Chọn ít nhất 3 bảng, 15 câu, chia đều nhân/chia cho mỗi bảng.</p>
+      <div class="option-grid" id="mixed-table-buttons"></div>
+      <button id="start-mixed-btn" class="btn btn-primary btn-block" style="margin-top:16px;" disabled>Bắt đầu ôn trộn (chọn ≥3 bảng)</button>
+    </div>
+  </section>
+
+  <!-- Quiz -->
+  <section id="quiz-section" style="display:none;">
+    <div class="quiz-meta">
+      <span>Câu <span id="q-current">1</span>/<span id="q-total">10</span></span>
+      <span id="quiz-mode-label"></span>
+    </div>
+    <div class="progress-bar"><div class="progress-bar-fill" id="progress-fill"></div></div>
+    <div class="card question-box">
+      <div class="question-text" id="q-prompt"></div>
+    </div>
+    <div id="q-feedback" class="feedback-banner" style="display:none;"></div>
+    <div class="answers-grid" id="q-answers"></div>
+  </section>
+
+  <!-- Kết quả -->
+  <section id="result-section" style="display:none;">
+    <div class="card center">
+      <div style="font-size: 3rem;">🎉</div>
+      <h2>Hoàn thành!</h2>
+      <div class="result-score" id="result-score"></div>
+      <p class="result-message" id="result-message"></p>
+      <div class="btn-row">
+        <button id="retry-btn" class="btn btn-primary">Làm lại</button>
+        <a href="../menu.html" class="btn btn-outline">Về menu chính</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="app-footer">Toán Vui 🧮 — Học mà chơi, chơi mà học</footer>
+
+<script src="../js/profile.js"></script>
+<script src="../js/quiz-engine.js"></script>
+<script src="../js/cuu-chuong.js"></script>
+<script>
+  requireProfileOrRedirect();
+  renderGreeting('greeting');
+
+  let selectedMixedTables = new Set();
+  let currentQuizType = null; // 'single' | 'mixed'
+  let currentQuizParam = null;
+
+  const singleBtnsEl = document.getElementById('single-table-buttons');
+  for (let n = 1; n <= 9; n++) {
+    const btn = document.createElement('button');
+    btn.className = 'option-chip';
+    btn.textContent = 'Bảng ' + n;
+    btn.addEventListener('click', () => launchQuiz('single', n));
+    singleBtnsEl.appendChild(btn);
+  }
+
+  const mixedBtnsEl = document.getElementById('mixed-table-buttons');
+  for (let n = 1; n <= 9; n++) {
+    const btn = document.createElement('button');
+    btn.className = 'option-chip';
+    btn.textContent = 'Bảng ' + n;
+    btn.addEventListener('click', () => toggleMixedTable(n, btn));
+    mixedBtnsEl.appendChild(btn);
+  }
+
+  function toggleMixedTable(n, btn) {
+    if (selectedMixedTables.has(n)) {
+      selectedMixedTables.delete(n);
+      btn.classList.remove('selected');
+    } else {
+      selectedMixedTables.add(n);
+      btn.classList.add('selected');
+    }
+    const startBtn = document.getElementById('start-mixed-btn');
+    const count = selectedMixedTables.size;
+    startBtn.disabled = count < 3;
+    startBtn.textContent = count < 3
+      ? `Bắt đầu ôn trộn (chọn ≥3 bảng, đã chọn ${count})`
+      : `Bắt đầu ôn trộn (${count} bảng đã chọn) 🎯`;
+  }
+
+  document.getElementById('start-mixed-btn').addEventListener('click', () => {
+    if (selectedMixedTables.size < 3) return;
+    launchQuiz('mixed', [...selectedMixedTables]);
+  });
+
+  function launchQuiz(type, param) {
+    currentQuizType = type;
+    currentQuizParam = param;
+    const questions = type === 'single'
+      ? buildSingleTableQuiz(param)
+      : buildMixedTablesQuiz(param, 15);
+
+    document.getElementById('setup-section').style.display = 'none';
+    document.getElementById('result-section').style.display = 'none';
+    document.getElementById('quiz-section').style.display = 'block';
+    document.getElementById('quiz-mode-label').textContent =
+      type === 'single' ? `Bảng ${param}` : `Trộn ${param.length} bảng`;
+
+    const engine = new QuizEngine({
+      questions,
+      containerIds: {
+        progressFill: 'progress-fill',
+        current: 'q-current',
+        total: 'q-total',
+        prompt: 'q-prompt',
+        answers: 'q-answers',
+        feedback: 'q-feedback',
+      },
+      onFinish: (score, total) => showResult(score, total),
+    });
+    engine.start();
+  }
+
+  function showResult(score, total) {
+    document.getElementById('quiz-section').style.display = 'none';
+    document.getElementById('result-section').style.display = 'block';
+    const scaledScore = Math.round((score / total) * 10);
+    renderResultScreen({
+      score,
+      total,
+      scaledScore,
+      containerIds: { score: 'result-score', message: 'result-message' },
+    });
+  }
+
+  document.getElementById('retry-btn').addEventListener('click', () => {
+    launchQuiz(currentQuizType, currentQuizParam);
+  });
+</script>
+</body>
+</html>
