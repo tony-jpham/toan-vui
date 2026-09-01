@@ -60,7 +60,10 @@
   <section id="quiz-section" style="display:none;">
     <div class="quiz-meta">
       <span>Câu <span id="q-current">1</span>/<span id="q-total">10</span></span>
-      <span id="quiz-mode-label"></span>
+      <div class="quiz-meta-right">
+        <span id="quiz-mode-label"></span>
+        <button id="exit-btn" class="exit-btn" aria-label="Thoát bài">✕</button>
+      </div>
     </div>
     <div class="progress-bar"><div class="progress-bar-fill" id="progress-fill"></div></div>
     <div class="card question-box">
@@ -68,6 +71,7 @@
     </div>
     <div id="q-feedback" class="feedback-banner" style="display:none;"></div>
     <div class="answers-grid" id="q-answers"></div>
+    <button id="next-btn" class="btn btn-secondary next-btn">Tiếp tục →</button>
   </section>
 
   <!-- Kết quả -->
@@ -76,6 +80,7 @@
       <div style="font-size: 3rem;">🎉</div>
       <h2>Hoàn thành!</h2>
       <div class="result-score" id="result-score"></div>
+      <p class="result-detail" id="result-detail"></p>
       <p class="result-message" id="result-message"></p>
       <div class="btn-row">
         <button id="retry-btn" class="btn btn-primary">Làm lại</button>
@@ -90,10 +95,18 @@
 
 <script src="../js/profile.js"></script>
 <script src="../js/quiz-engine.js"></script>
+<script src="../js/exit-confirm.js"></script>
 <script src="../js/cuu-chuong.js"></script>
 <script>
   requireProfileOrRedirect();
   renderGreeting('greeting');
+
+  let engineRef = null;
+  setupExitConfirm({
+    exitBtnId: 'exit-btn',
+    redirectUrl: '../menu.html',
+    onConfirmExit: () => engineRef && engineRef.stop(),
+  });
 
   let selectedMixedTables = new Set();
   let currentQuizType = null; // 'single' | 'mixed'
@@ -160,9 +173,11 @@
         prompt: 'q-prompt',
         answers: 'q-answers',
         feedback: 'q-feedback',
+        nextBtn: 'next-btn',
       },
       onFinish: (score, total) => showResult(score, total),
     });
+    engineRef = engine;
     engine.start();
   }
 
@@ -174,7 +189,7 @@
       score,
       total,
       scaledScore,
-      containerIds: { score: 'result-score', message: 'result-message' },
+      containerIds: { score: 'result-score', detail: 'result-detail', message: 'result-message' },
     });
   }
 
