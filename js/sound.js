@@ -1,6 +1,6 @@
 /**
  * Âm thanh phản hồi sinh bằng Web Audio API — không cần file audio, không lo bản quyền.
- * AudioContext chỉ được tạo ở lần phát đầu tiên (thường ngay sau cú chạm đầu tiên của bé),
+ * AudioContext chỉ được tạo ở lần phát đầu tiên (thường ngay sau cú chạm đầu tiên của người dùng),
  * vì trình duyệt mobile chặn autoplay audio nếu chưa có tương tác người dùng.
  */
 const ToanVuiSound = (() => {

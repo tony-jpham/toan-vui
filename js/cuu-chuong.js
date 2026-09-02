@@ -36,7 +36,7 @@ function buildMultiplyQuestion(n, i) {
 
 /**
  * Sinh câu hỏi chia "n × i ÷ n = ?" (dựa trên phép nhân tương ứng),
- * hiển thị dạng "correct ÷ n = ?" để bé luyện phép chia trong bảng.
+ * hiển thị dạng "correct ÷ n = ?" để luyện phép chia trong bảng.
  */
 function buildDivideQuestion(n, i) {
   const dividend = n * i;

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Toán Vui — Ôn tập Toán tiểu học</title>
-<meta name="description" content="Toán Vui giúp bé tiểu học ôn tập bảng cửu chương, cộng trừ và xem giờ đồng hồ qua các bài trắc nghiệm vui nhộn.">
+<meta name="description" content="Toán Vui — người bạn đồng hành ôn tập Toán tiểu học: bảng cửu chương, cộng trừ và xem giờ đồng hồ qua các bài trắc nghiệm vui nhộn.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧮</text></svg>">
 <!-- Google tag (gtag.js): chỉ tải trên website production. -->
 <script>
@@ -35,22 +35,22 @@
   <div class="center" style="margin-bottom: 28px;">
     <div style="font-size: 4rem;">🧮✨</div>
     <h1>Toán Vui</h1>
-    <p class="subtitle">Cùng bé ôn tập Toán thật vui mỗi ngày nhé!</p>
+    <p class="subtitle">Mình là Toán Vui, cùng bạn ôn Toán thật vui mỗi ngày nhé!</p>
   </div>
 
   <div class="card" id="profile-form-card">
-    <h2 class="center">Bé tên gì nè? 😊</h2>
+    <h2 class="center">Bạn tên gì vậy? 😊</h2>
     <form id="profile-form">
       <div class="field">
-        <label for="child-name">Tên của bé</label>
+        <label for="child-name">Tên của bạn</label>
         <input type="text" id="child-name" placeholder="Ví dụ: Bin" maxlength="30" required>
       </div>
       <div class="field">
-        <label for="child-age">Bé mấy tuổi rồi?</label>
+        <label for="child-age">Bạn mấy tuổi rồi?</label>
         <input type="number" id="child-age" placeholder="Ví dụ: 8" min="5" max="12" required>
       </div>
       <div class="field">
-        <label>Bé chọn một hình đại diện nhé</label>
+        <label>Chọn một hình đại diện nhé</label>
         <div class="avatar-grid" id="avatar-grid"></div>
       </div>
       <button type="submit" class="btn btn-primary btn-block">Bắt đầu học 🚀</button>
@@ -63,7 +63,7 @@
     <p class="subtitle">Sẵn sàng ôn tập tiếp chưa nào?</p>
     <div class="btn-row" style="margin-top: 16px;">
       <a href="menu.html" class="btn btn-primary">Vào học ngay 🎈</a>
-      <button id="switch-profile-btn" class="btn btn-outline">Đổi bé khác</button>
+      <button id="switch-profile-btn" class="btn btn-outline">Đổi người khác</button>
     </div>
   </div>
 </main>
@@ -94,7 +94,7 @@
     if (profile) {
       document.getElementById('profile-form-card').style.display = 'none';
       document.getElementById('welcome-back-card').style.display = 'block';
-      document.getElementById('welcome-back-text').textContent = `Chào mừng bé ${profile.name} quay lại!`;
+      document.getElementById('welcome-back-text').textContent = `Chào mừng ${profile.name} quay lại!`;
     }
   })();
 

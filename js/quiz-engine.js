@@ -116,7 +116,7 @@ class QuizEngine {
     this.feedbackEl.style.display = 'block';
     this.feedbackEl.className = 'feedback-banner ' + (isCorrect ? 'correct' : 'wrong');
     const messages = isCorrect
-      ? ['Chính xác! ⭐', 'Giỏi quá! 🎉', 'Đúng rồi bé ơi! 👏']
+      ? ['Chính xác! ⭐', 'Giỏi quá! 🎉', 'Đúng rồi đó! 👏']
       : ['Chưa đúng, cố lên nhé! 💪', 'Gần đúng rồi, thử câu sau nha! 🌟'];
     this.feedbackEl.textContent = messages[randomInt(0, messages.length - 1)];
   }
@@ -135,10 +135,10 @@ class QuizEngine {
 
 function defaultResultMessages(score, total) {
   const pct = score / total;
-  if (pct === 1) return 'Xuất sắc! Bé làm đúng hết luôn nè! 🏆';
-  if (pct >= 0.8) return 'Giỏi quá! Bé làm rất tốt! 🎉';
+  if (pct === 1) return 'Xuất sắc! Bạn làm đúng hết luôn nè! 🏆';
+  if (pct >= 0.8) return 'Giỏi quá! Bạn làm rất tốt! 🎉';
   if (pct >= 0.5) return 'Khá lắm! Cố gắng thêm chút nữa nhé! 🌟';
-  return 'Không sao đâu, luyện thêm chút là bé sẽ giỏi hơn! 💪';
+  return 'Không sao đâu, luyện thêm chút là bạn sẽ giỏi hơn! 💪';
 }
 
 function renderResultScreen({ score, total, scaledScore, containerIds, message }) {

@@ -11,7 +11,7 @@ function setupExitConfirm({ exitBtnId, redirectUrl, onConfirmExit }) {
   overlay.innerHTML = `
     <div class="modal-box">
       <div class="icon">🤔</div>
-      <h2>Bé muốn thoát bài không?</h2>
+      <h2>Bạn muốn thoát bài không?</h2>
       <p class="subtitle">Kết quả bài đang làm sẽ không được lưu lại đâu nha.</p>
       <div class="btn-row">
         <button class="btn btn-outline" id="exit-cancel-btn">Làm tiếp</button>

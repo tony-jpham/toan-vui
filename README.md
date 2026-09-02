@@ -2,7 +2,7 @@
 
 Website ôn tập môn Toán cho học sinh tiểu học Việt Nam (lớp 1 → lớp 5). Chạy hoàn toàn trên trình duyệt (HTML/CSS/JS thuần, không build tool), triển khai trên **GitHub Pages**.
 
-Đối tượng dùng chính: bé thao tác trên **iPad / điện thoại** — ưu tiên nút bấm to, chữ rõ, thao tác chạm, hạn chế gõ bàn phím.
+Đối tượng dùng chính: học sinh tiểu học thao tác trên **iPad / điện thoại** — ưu tiên nút bấm to, chữ rõ, thao tác chạm, hạn chế gõ bàn phím.
 
 - **Repo**: [github.com/tony-jpham/toan-vui](https://github.com/tony-jpham/toan-vui)
 - **Live**: https://tony-jpham.github.io/toan-vui/
@@ -12,7 +12,7 @@ Website ôn tập môn Toán cho học sinh tiểu học Việt Nam (lớp 1 →
 1. **Bảng cửu chương** — luyện tập trắc nghiệm nhân/chia trong phạm vi 1–9 (1 bảng hoặc trộn nhiều bảng).
 2. **Cộng trừ trong phạm vi 200** (không số âm) — luyện tính nhẩm trắc nghiệm, 3 mức độ khó, có bài không giới hạn thời gian và bài giới hạn thời gian ("Thử Thách Tốc Độ").
 3. **Xem giờ đồng hồ kim** — trắc nghiệm đọc giờ, phút chẵn.
-4. **Hồ sơ bé** — nhập tên, tuổi, chọn avatar trước khi học; xem/sửa lại bất kỳ lúc nào; lưu `localStorage`, dùng để cá nhân hoá lời chào.
+4. **Hồ sơ người dùng** — nhập tên, tuổi, chọn avatar trước khi học; xem/sửa lại bất kỳ lúc nào; lưu `localStorage`, dùng để cá nhân hoá lời chào.
 5. **Lịch sử luyện tập** — mỗi bài hoàn thành được lưu lại 7 ngày, xem lại điểm số và số câu đúng/sai của từng lần làm bài để theo dõi tiến độ.
 
 **Ngoài phạm vi hiện tại**: đăng nhập/tài khoản, đồng bộ dữ liệu giữa nhiều thiết bị, backend/server.
@@ -21,7 +21,7 @@ Website ôn tập môn Toán cho học sinh tiểu học Việt Nam (lớp 1 →
 
 - HTML5 + CSS3 + JavaScript (ES6+), không framework, không bundler.
 - Kiến trúc **multi-page**: mỗi màn hình là một file `.html`, dùng chung `css/` và `js/` qua `<link>`/`<script>`.
-- Lưu trữ: `localStorage` (hồ sơ bé: tên, tuổi, avatar; lịch sử luyện tập: 7 ngày gần nhất).
+- Lưu trữ: `localStorage` (hồ sơ người dùng: tên, tuổi, avatar; lịch sử luyện tập: 7 ngày gần nhất).
 - Triển khai: GitHub Pages, nhánh `main`, thư mục gốc.
 - Thống kê: Google Analytics (GA4).
 
@@ -31,7 +31,7 @@ Website ôn tập môn Toán cho học sinh tiểu học Việt Nam (lớp 1 →
 toan-vui/
 ├── index.html                    # Trang chào — nhập tên/tuổi/avatar
 ├── menu.html                     # Menu chính, điều hướng tới 4 chế độ luyện tập
-├── profile.html                  # Xem & sửa hồ sơ bé (tên, tuổi, avatar)
+├── profile.html                  # Xem & sửa hồ sơ người dùng (tên, tuổi, avatar)
 ├── history.html                  # Xem lịch sử luyện tập 7 ngày gần nhất
 ├── cuu-chuong/
 │   └── luyen-tap.html             # Trắc nghiệm 1 bảng / trộn nhiều bảng
@@ -44,7 +44,7 @@ toan-vui/
 │   ├── style.css                  # Biến màu, layout, typography dùng chung
 │   └── components.css             # Quiz UI, modal, kết quả, đồng hồ
 ├── js/
-│   ├── profile.js                 # Quản lý hồ sơ bé trong localStorage
+│   ├── profile.js                 # Quản lý hồ sơ người dùng trong localStorage
 │   ├── quiz-engine.js             # Engine trắc nghiệm dùng chung: render câu hỏi, chấm điểm, auto-advance, kết quả
 │   ├── exit-confirm.js            # Nút thoát bài + popup xác nhận, dùng chung cho mọi trang quiz
 │   ├── sound.js                   # Âm thanh đúng/sai/hoàn thành, sinh bằng Web Audio API
@@ -77,7 +77,7 @@ toan-vui/
 | Vừa | ≤ 100 | Có nhớ 1 lần (qua hàng chục) | `a + b = ?`, `a − b = ?`, thỉnh thoảng tìm số hạng còn thiếu |
 | Khó | ≤ 200 | Có nhớ nhiều lần / số lớn gần 200 | Thêm dạng tìm số hạng còn thiếu `a + ? = c`, `? − b = c` |
 
-**Giới hạn thời gian cho Thử Thách Tốc Độ**: tính theo giây/câu rồi cộng dồn thành một mốc thời gian tổng cho cả bài (không đếm ngược riêng từng câu) — **Vừa: 15s/câu × 15 câu = 3 phút 45 giây**; **Khó: 12s/câu × 15 câu = 3 phút**. Đồng hồ hiển thị tổng thời gian còn lại, bé tự phân bổ cho từng câu.
+**Giới hạn thời gian cho Thử Thách Tốc Độ**: tính theo giây/câu rồi cộng dồn thành một mốc thời gian tổng cho cả bài (không đếm ngược riêng từng câu) — **Vừa: 15s/câu × 15 câu = 3 phút 45 giây**; **Khó: 12s/câu × 15 câu = 3 phút**. Đồng hồ hiển thị tổng thời gian còn lại, người dùng tự phân bổ cho từng câu.
 
 Căn cứ: nghiên cứu về fact fluency khuyến nghị ~2–4 giây/phép tính đơn giản đã thuộc lòng, nhưng phép cộng trừ có nhớ trong phạm vi 200 phức tạp hơn nhiều so với fact đơn thuần nên mốc thời gian được nới rộng hơn tương ứng.
 
@@ -89,11 +89,11 @@ Căn cứ: nghiên cứu về fact fluency khuyến nghị ~2–4 giây/phép t�
 - Giờ ngẫu nhiên, phút chỉ rơi vào mốc chẵn: `00, 05, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55`.
 - Đáp án nhiễu: lệch giờ ±1, đọc nhầm kim giờ/kim phút, đọc nhầm 5 phút liền kề.
 
-### IV. Hồ sơ bé
+### IV. Hồ sơ người dùng
 
 - `index.html`: form nhập **tên** + **số tuổi** + chọn **avatar** (12 emoji động vật dễ thương: 🐻🐰🐱🐶🦊🐼🦁🐸🐵🦄🐷🐨), nút "Bắt đầu học" → lưu `localStorage` (key `toanvui_profile = { name, age, avatar }`).
 - `profile.html`: xem lại và sửa hồ sơ (tên, tuổi, avatar) bất kỳ lúc nào, có preview avatar lớn ở đầu trang. Truy cập qua badge avatar ở góc phải header của `menu.html`.
-- Lần sau mở lại `index.html`: chào bằng tên bé, có nút "Đổi bé khác" để xoá hồ sơ và nhập lại từ đầu (cũng có ở `profile.html`).
+- Lần sau mở lại `index.html`: chào bằng tên, có nút "Đổi người khác" để xoá hồ sơ và nhập lại từ đầu (cũng có ở `profile.html`).
 - Mọi trang luyện tập đều gọi `requireProfileOrRedirect()` — chưa có hồ sơ sẽ tự chuyển về `index.html`.
 
 ### V. Trải nghiệm làm bài (dùng chung qua `quiz-engine.js`)
@@ -101,7 +101,7 @@ Căn cứ: nghiên cứu về fact fluency khuyến nghị ~2–4 giây/phép t�
 - **Âm thanh phản hồi** (`sound.js`): sinh bằng Web Audio API, không dùng file audio ngoài — 2 nốt đi lên khi trả lời đúng, 1 nốt trầm ngắn khi trả lời sai, chuỗi 4 nốt fanfare khi hoàn thành bài.
 - **Auto-advance**: sau khi chọn đáp án, tự động chuyển câu tiếp theo sau **1.5 giây** — không có nút thao tác thêm, giữ nhịp làm bài liền mạch.
 - **Lưới đáp án 2×2**: 4 lựa chọn luôn xếp cố định 2 cột × 2 dòng, tiết kiệm không gian hiển thị trên điện thoại.
-- **Thoát bài** (`exit-confirm.js`): nút ✕ trong thanh trạng thái mở popup xác nhận "Bé muốn thoát bài không?" — chọn "Làm tiếp" để đóng popup, hoặc "Thoát bài" để dừng mọi timer và quay về menu chính.
+- **Thoát bài** (`exit-confirm.js`): nút ✕ trong thanh trạng thái mở popup xác nhận "Bạn muốn thoát bài không?" — chọn "Làm tiếp" để đóng popup, hoặc "Thoát bài" để dừng mọi timer và quay về menu chính.
 - **Kết quả**: hiển thị điểm số theo thang 10 (làm tròn từ tỉ lệ đúng/tổng) làm nội dung chính, kèm dòng phụ nhỏ "Đúng X/Y câu", và lời động viên thay đổi theo mức điểm.
 
 ### VI. Lịch sử luyện tập
@@ -113,7 +113,7 @@ Căn cứ: nghiên cứu về fact fluency khuyến nghị ~2–4 giây/phép t�
 
 ## UI/UX
 
-- **Giọng điệu**: gần gũi, dễ thương vừa phải — xưng "bé", emoji điểm xuyết, tránh la hét/quá lố.
+- **Giọng điệu**: ứng dụng đóng vai một người bạn thân của người dùng — xưng "mình", gọi người dùng là "bạn" (không dùng "bé"/"con"), gần gũi, dễ thương vừa phải, emoji điểm xuyết, tránh la hét/quá lố.
 - **Màu sắc**: bảng màu tươi sáng, pastel (`css/style.css` biến `--primary`, `--secondary`, ...), tương phản đủ để đọc trên iPad ngoài trời.
 - **Vùng chạm**: nút bấm tối thiểu ~44×44px, chữ số phép tính cỡ lớn.
 - **Phản hồi tức thời**: chọn đáp án → đổi màu đúng/sai ngay, hiện banner động viên, không có cảm giác bị chê khi sai.
@@ -154,10 +154,10 @@ ID GA4 thật được cấu hình trực tiếp trong từng file `.html` (khô
 - Độ khó cộng trừ kết hợp 3 tiêu chí: phạm vi số, có nhớ/không nhớ, dạng phép tính.
 - Lưu lịch sử điểm mỗi lần làm bài trong 7 ngày (chỉ tổng kết, không lưu chi tiết từng câu) — đủ để theo dõi tiến độ mà không phình `localStorage`.
 - Bảng cửu chương MVP chỉ 1–9.
-- Không có màn hình chọn lớp (1→5) — bé tự chọn độ khó theo từng module.
+- Không có màn hình chọn lớp (1→5) — người dùng tự chọn độ khó theo từng module.
 - Repo GitHub công khai (`public`) để chạy GitHub Pages miễn phí, deploy trực tiếp từ nhánh `main`.
 
 ## Việc cần làm tiếp (backlog)
 
 - [ ] Kiểm thử trên thiết bị iPad/điện thoại thật (ngoài trình duyệt giả lập).
-- [ ] Rà soát lại mốc thời gian Thử Thách Tốc Độ sau khi có phản hồi thực tế từ bé dùng thử.
+- [ ] Rà soát lại mốc thời gian Thử Thách Tốc Độ sau khi có phản hồi thực tế từ người dùng thử.
