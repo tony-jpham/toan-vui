@@ -34,7 +34,7 @@ function requireProfileOrRedirect() {
 function getRootPath() {
   const depth = window.location.pathname.split('/').filter(Boolean);
   const isSubfolder = /\.(html)$/.test(depth[depth.length - 1] || '') && depth.length > 1 &&
-    ['cuu-chuong', 'cong-tru', 'xem-gio'].includes(depth[depth.length - 2]);
+    ['cuu-chuong', 'cong-tru', 'xem-gio', 'tro-choi'].includes(depth[depth.length - 2]);
   return isSubfolder ? '../' : '';
 }
 

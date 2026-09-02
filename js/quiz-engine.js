@@ -32,10 +32,11 @@ function pickUniqueFrom(pool, count, excludeSet) {
 const AUTO_ADVANCE_MS = 1500;
 
 class QuizEngine {
-  constructor({ questions, containerIds, onFinish, resultMessages }) {
+  constructor({ questions, containerIds, onFinish, onAnswered, resultMessages }) {
     this.questions = questions;
     this.containerIds = containerIds;
     this.onFinish = onFinish;
+    this.onAnswered = onAnswered;
     this.resultMessages = resultMessages || defaultResultMessages;
     this.currentIndex = 0;
     this.score = 0;
@@ -103,6 +104,8 @@ class QuizEngine {
       this.showFeedback(false);
       ToanVuiSound.playWrong();
     }
+
+    if (this.onAnswered) this.onAnswered(opt.correct);
 
     this.advanceTimer = setTimeout(() => this.next(), AUTO_ADVANCE_MS);
   }

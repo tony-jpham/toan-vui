@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Đua xe — Toán Vui</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌈</text></svg>">
+<!-- Google tag (gtag.js): chỉ tải trên website production. -->
+<script>
+  if (
+    location.hostname === 'tony-jpham.github.io' &&
+    location.pathname.startsWith('/toan-vui/')
+  ) {
+    var gaScript = document.createElement('script');
+    gaScript.async = true;
+    gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-WPFRJK3EH4';
+    document.head.appendChild(gaScript);
+
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function(){window.dataLayer.push(arguments);};
+    window.gtag('js', new Date());
+    window.gtag('config', 'G-WPFRJK3EH4');
+  }
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+
+<header class="app-header">
+  <a href="../menu.html" class="logo">🌈 Toán Vui</a>
+  <span class="greeting" id="greeting"></span>
+</header>
+
+<main class="container">
+
+  <section id="setup-section">
+    <a href="menu.html" class="breadcrumb">← Menu</a>
+    <h1 class="center">Đua xe 🏎️</h1>
+    <p class="subtitle center">10 câu cộng trừ và xem giờ trộn lẫn. Trả lời đúng để xe bạn vọt lên nhé!</p>
+    <div class="card center">
+      <button id="start-btn" class="btn btn-primary">Bắt đầu đua 🏁</button>
+    </div>
+  </section>
+
+  <section id="quiz-section" style="display:none;">
+    <div class="quiz-meta">
+      <span>Câu <span id="q-current">1</span>/<span id="q-total">10</span></span>
+      <button id="exit-btn" class="exit-btn" aria-label="Thoát bài">✕</button>
+    </div>
+    <div class="progress-bar"><div class="progress-bar-fill" id="progress-fill"></div></div>
+
+    <div class="race-track">
+      <div class="race-lane">
+        <div class="racer" id="player-racer" style="left:0%;">
+          <span class="racer-icon">🏎️</span> <span class="racer-label" id="player-label">Bạn</span>
+        </div>
+      </div>
+      <div class="race-lane">
+        <div class="racer" id="opponent-racer" style="left:0%;">
+          <span class="racer-icon">🚙</span> <span class="racer-label" id="opponent-label">Đối thủ</span>
+        </div>
+      </div>
+      <div class="race-flag"></div>
+    </div>
+    <div class="race-feedback" id="race-feedback"></div>
+
+    <div class="card">
+      <div id="clock-holder" style="text-align:center;"></div>
+      <div class="question-text center" id="q-prompt-display"></div>
+    </div>
+    <div id="q-feedback" class="feedback-banner" style="display:none;"></div>
+    <div class="answers-grid" id="q-answers"></div>
+  </section>
+
+  <section id="result-section" style="display:none;">
+    <div class="card center">
+      <div style="font-size: 3rem;" id="result-emoji">🏆</div>
+      <h2 id="result-title">Về đích!</h2>
+      <div class="result-score" id="result-score"></div>
+      <p class="result-detail" id="result-detail"></p>
+      <p class="result-message" id="result-message"></p>
+    </div>
+    <div id="race-result-list"></div>
+    <div class="btn-row" style="margin-top: 16px;">
+      <button id="retry-btn" class="btn btn-primary">Đua lại</button>
+      <a href="../menu.html" class="btn btn-outline">Về menu chính</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="app-footer">Toán Vui 🌈 — Học mà chơi, chơi mà học</footer>
+
+<!-- q-prompt cần tồn tại cho QuizEngine dù không hiển thị trực tiếp -->
+<div id="q-prompt" style="display:none;"></div>
+
+<script src="../js/profile.js"></script>
+<script src="../js/sound.js"></script>
+<script src="../js/quiz-engine.js"></script>
+<script src="../js/exit-confirm.js"></script>
+<script src="../js/history.js"></script>
+<script src="../js/badges.js"></script>
+<script src="../js/clock-render.js"></script>
+<script src="../js/xem-gio.js"></script>
+<script src="../js/cong-tru.js"></script>
+<script src="../js/dua-xe.js"></script>
+<script>
+  const profile = requireProfileOrRedirect();
+  renderGreeting('greeting');
+
+  const TOTAL_QUESTIONS = 10;
+  const TRACK_MAX_LEFT = 78; // % — chừa chỗ cho nhãn tên không tràn khỏi track
+
+  let engine = null;
+  let opponentName = '';
+  let playerProgress = 0;
+  let opponentProgress = 0;
+
+  setupExitConfirm({
+    exitBtnId: 'exit-btn',
+    redirectUrl: '../menu.html',
+    onConfirmExit: () => engine && engine.stop(),
+  });
+
+  document.getElementById('start-btn').addEventListener('click', launchGame);
+
+  function launchGame() {
+    const questions = buildDuaXeQuestions(TOTAL_QUESTIONS);
+    opponentName = pickOpponentNickname();
+    playerProgress = 0;
+    opponentProgress = 0;
+
+    document.getElementById('player-label').textContent = profile.name;
+    document.getElementById('opponent-label').textContent = opponentName;
+    document.getElementById('player-racer').style.left = '0%';
+    document.getElementById('opponent-racer').style.left = '0%';
+    document.getElementById('race-feedback').textContent = '';
+
+    document.getElementById('setup-section').style.display = 'none';
+    document.getElementById('result-section').style.display = 'none';
+    document.getElementById('quiz-section').style.display = 'block';
+
+    engine = new QuizEngine({
+      questions,
+      containerIds: {
+        progressFill: 'progress-fill',
+        current: 'q-current',
+        total: 'q-total',
+        prompt: 'q-prompt',
+        answers: 'q-answers',
+        feedback: 'q-feedback',
+      },
+      onAnswered: (isCorrect) => advanceRace(isCorrect),
+      onFinish: (score, total) => finishGame(score, total),
+    });
+
+    const originalRender = engine.renderQuestion.bind(engine);
+    engine.renderQuestion = function () {
+      originalRender();
+      const q = this.questions[this.currentIndex];
+      const clockHolder = document.getElementById('clock-holder');
+      const promptDisplay = document.getElementById('q-prompt-display');
+      if (q.clockSVG) {
+        clockHolder.style.display = 'block';
+        clockHolder.innerHTML = q.clockSVG;
+        promptDisplay.style.display = 'none';
+      } else {
+        clockHolder.style.display = 'none';
+        promptDisplay.style.display = 'block';
+        promptDisplay.textContent = q.prompt;
+      }
+    };
+
+    engine.start();
+  }
+
+  function advanceRace(isCorrect) {
+    const step = TRACK_MAX_LEFT / TOTAL_QUESTIONS;
+    if (isCorrect) {
+      playerProgress = Math.min(TRACK_MAX_LEFT, playerProgress + step);
+    }
+    // Đối thủ chạy đều mỗi câu, không phụ thuộc người chơi đúng/sai — mô phỏng tốc độ trung bình.
+    opponentProgress = Math.min(TRACK_MAX_LEFT, opponentProgress + step * 0.85);
+
+    document.getElementById('player-racer').style.left = playerProgress + '%';
+    document.getElementById('opponent-racer').style.left = opponentProgress + '%';
+
+    const feedbackEl = document.getElementById('race-feedback');
+    if (isCorrect) {
+      feedbackEl.textContent = playerProgress > opponentProgress ? 'Xe bạn đang dẫn trước! 🚀' : 'Xe bạn vọt lên rồi! 🚀';
+    } else {
+      feedbackEl.textContent = 'Xe bạn giậm chân tại chỗ, cố lên! 💪';
+    }
+  }
+
+  function finishGame(score, total) {
+    document.getElementById('quiz-section').style.display = 'none';
+    document.getElementById('result-section').style.display = 'block';
+    const scaledScore = Math.round((score / total) * 10);
+
+    const playerWins = playerProgress >= opponentProgress;
+    document.getElementById('result-emoji').textContent = playerWins ? '🏆' : '🥈';
+    document.getElementById('result-title').textContent = playerWins ? `${profile.name} về nhất! 🎉` : `${opponentName} về nhất trước!`;
+
+    renderResultScreen({
+      score,
+      total,
+      scaledScore,
+      containerIds: { score: 'result-score', detail: 'result-detail', message: 'result-message' },
+    });
+
+    const listEl = document.getElementById('race-result-list');
+    const ranked = playerWins
+      ? [{ label: profile.name, icon: '🏎️' }, { label: opponentName, icon: '🚙' }]
+      : [{ label: opponentName, icon: '🚙' }, { label: profile.name, icon: '🏎️' }];
+    listEl.innerHTML = ranked.map((r, i) => `
+      <div class="race-result-item">
+        <span class="rank">${i + 1}</span>
+        <span style="font-size:1.4rem;">${r.icon}</span>
+        <span>${r.label}</span>
+      </div>
+    `).join('');
+
+    saveHistoryEntry({
+      module: 'dua-xe',
+      score,
+      total,
+      scaledScore,
+    });
+    const { newlyUnlocked } = recordBadgeProgress({ module: 'dua-xe', scaledScore });
+    newlyUnlocked.forEach((badge, i) => setTimeout(() => showBadgeToast(badge), i * 3400));
+  }
+
+  document.getElementById('retry-btn').addEventListener('click', launchGame);
+</script>
+</body>
+</html>

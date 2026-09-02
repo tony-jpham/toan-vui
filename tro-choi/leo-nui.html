@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Leo núi — Toán Vui</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌈</text></svg>">
+<!-- Google tag (gtag.js): chỉ tải trên website production. -->
+<script>
+  if (
+    location.hostname === 'tony-jpham.github.io' &&
+    location.pathname.startsWith('/toan-vui/')
+  ) {
+    var gaScript = document.createElement('script');
+    gaScript.async = true;
+    gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-WPFRJK3EH4';
+    document.head.appendChild(gaScript);
+
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function(){window.dataLayer.push(arguments);};
+    window.gtag('js', new Date());
+    window.gtag('config', 'G-WPFRJK3EH4');
+  }
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+
+<header class="app-header">
+  <a href="../menu.html" class="logo">🌈 Toán Vui</a>
+  <span class="greeting" id="greeting"></span>
+</header>
+
+<main class="container">
+
+  <section id="setup-section">
+    <a href="menu.html" class="breadcrumb">← Menu</a>
+    <h1 class="center">Leo núi 🏔️</h1>
+    <p class="subtitle center">10 câu cộng trừ và xem giờ trộn lẫn. Trả lời đúng để leo lên đỉnh nhé!</p>
+    <div class="card center">
+      <button id="start-btn" class="btn btn-primary">Bắt đầu leo 🧗</button>
+    </div>
+  </section>
+
+  <section id="quiz-section" style="display:none;">
+    <div class="quiz-meta">
+      <span>Câu <span id="q-current">1</span>/<span id="q-total">10</span></span>
+      <button id="exit-btn" class="exit-btn" aria-label="Thoát bài">✕</button>
+    </div>
+    <div class="progress-bar"><div class="progress-bar-fill" id="progress-fill"></div></div>
+
+    <div class="mountain-wrap">
+      <div class="mountain-box">
+        <div class="mountain-flag">🚩</div>
+        <div class="mountain-shape"></div>
+        <div class="mountain-climber" id="climber" style="bottom:0%;">🐻</div>
+      </div>
+      <div class="mountain-stats">
+        <span class="stat-name" id="climber-name">Bạn</span>
+        <span class="stat-count" id="climber-count">0/10</span>
+        <span class="stat-label">bậc</span>
+      </div>
+    </div>
+    <div class="race-feedback" id="climb-feedback"></div>
+
+    <div class="card">
+      <div id="clock-holder" style="text-align:center;"></div>
+      <div class="question-text center" id="q-prompt-display"></div>
+    </div>
+    <div id="q-feedback" class="feedback-banner" style="display:none;"></div>
+    <div class="answers-grid" id="q-answers"></div>
+  </section>
+
+  <section id="result-section" style="display:none;">
+    <div class="card center">
+      <div style="font-size: 3rem;" id="result-emoji">🏔️</div>
+      <h2 id="result-title">Lên đến đỉnh!</h2>
+      <div class="result-score" id="result-score"></div>
+      <p class="result-detail" id="result-detail"></p>
+      <p class="result-message" id="result-message"></p>
+      <div class="mountain-box mountain-summary">
+        <div class="mountain-flag" id="summary-flag">🚩</div>
+        <div class="mountain-shape"></div>
+        <div class="mountain-climber" id="summary-climber" style="bottom:0%;">🐻</div>
+      </div>
+    </div>
+    <div class="btn-row" style="margin-top: 16px;">
+      <button id="retry-btn" class="btn btn-primary">Leo lại</button>
+      <a href="../menu.html" class="btn btn-outline">Về menu chính</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="app-footer">Toán Vui 🌈 — Học mà chơi, chơi mà học</footer>
+
+<!-- q-prompt cần tồn tại cho QuizEngine dù không hiển thị trực tiếp -->
+<div id="q-prompt" style="display:none;"></div>
+
+<script src="../js/profile.js"></script>
+<script src="../js/sound.js"></script>
+<script src="../js/quiz-engine.js"></script>
+<script src="../js/exit-confirm.js"></script>
+<script src="../js/history.js"></script>
+<script src="../js/badges.js"></script>
+<script src="../js/clock-render.js"></script>
+<script src="../js/xem-gio.js"></script>
+<script src="../js/cong-tru.js"></script>
+<script src="../js/dua-xe.js"></script>
+<script>
+  const profile = requireProfileOrRedirect();
+  renderGreeting('greeting');
+
+  const TOTAL_QUESTIONS = 10;
+  const CLIMB_MAX_BOTTOM = 82; // % — chừa chỗ để nhân vật không che mất lá cờ ở đỉnh
+
+  let engine = null;
+  let stepsClimbed = 0;
+
+  setupExitConfirm({
+    exitBtnId: 'exit-btn',
+    redirectUrl: '../menu.html',
+    onConfirmExit: () => engine && engine.stop(),
+  });
+
+  document.getElementById('start-btn').addEventListener('click', launchGame);
+
+  function launchGame() {
+    const questions = buildDuaXeQuestions(TOTAL_QUESTIONS);
+    stepsClimbed = 0;
+
+    document.getElementById('climber-name').textContent = profile.name;
+    document.getElementById('climber-count').textContent = `0/${TOTAL_QUESTIONS}`;
+    document.getElementById('climber').style.bottom = '0%';
+    document.getElementById('climb-feedback').textContent = '';
+
+    document.getElementById('setup-section').style.display = 'none';
+    document.getElementById('result-section').style.display = 'none';
+    document.getElementById('quiz-section').style.display = 'block';
+
+    engine = new QuizEngine({
+      questions,
+      containerIds: {
+        progressFill: 'progress-fill',
+        current: 'q-current',
+        total: 'q-total',
+        prompt: 'q-prompt',
+        answers: 'q-answers',
+        feedback: 'q-feedback',
+      },
+      onAnswered: (isCorrect) => advanceClimb(isCorrect),
+      onFinish: (score, total) => finishGame(score, total),
+    });
+
+    const originalRender = engine.renderQuestion.bind(engine);
+    engine.renderQuestion = function () {
+      originalRender();
+      const q = this.questions[this.currentIndex];
+      const clockHolder = document.getElementById('clock-holder');
+      const promptDisplay = document.getElementById('q-prompt-display');
+      if (q.clockSVG) {
+        clockHolder.style.display = 'block';
+        clockHolder.innerHTML = q.clockSVG;
+        promptDisplay.style.display = 'none';
+      } else {
+        clockHolder.style.display = 'none';
+        promptDisplay.style.display = 'block';
+        promptDisplay.textContent = q.prompt;
+      }
+    };
+
+    engine.start();
+  }
+
+  function advanceClimb(isCorrect) {
+    const feedbackEl = document.getElementById('climb-feedback');
+    if (isCorrect) {
+      stepsClimbed++;
+      const bottomPct = (stepsClimbed / TOTAL_QUESTIONS) * CLIMB_MAX_BOTTOM;
+      document.getElementById('climber').style.bottom = bottomPct + '%';
+      feedbackEl.textContent = 'Leo lên 1 bậc rồi! 🧗';
+    } else {
+      feedbackEl.textContent = 'Đứng vững đã, cố lên câu sau nhé! 💪';
+    }
+    document.getElementById('climber-count').textContent = `${stepsClimbed}/${TOTAL_QUESTIONS}`;
+  }
+
+  function finishGame(score, total) {
+    document.getElementById('quiz-section').style.display = 'none';
+    document.getElementById('result-section').style.display = 'block';
+    const scaledScore = Math.round((score / total) * 10);
+
+    const reachedTop = stepsClimbed >= total;
+    document.getElementById('result-emoji').textContent = reachedTop ? '🏔️' : '⛰️';
+    document.getElementById('result-title').textContent = reachedTop
+      ? `${profile.name} đã lên đến đỉnh! 🎉`
+      : `${profile.name} leo được ${stepsClimbed} bậc!`;
+
+    renderResultScreen({
+      score,
+      total,
+      scaledScore,
+      containerIds: { score: 'result-score', detail: 'result-detail', message: 'result-message' },
+    });
+
+    const summaryBottomPct = (stepsClimbed / TOTAL_QUESTIONS) * CLIMB_MAX_BOTTOM;
+    document.getElementById('summary-climber').style.bottom = summaryBottomPct + '%';
+
+    saveHistoryEntry({
+      module: 'leo-nui',
+      score,
+      total,
+      scaledScore,
+    });
+    const { newlyUnlocked } = recordBadgeProgress({ module: 'leo-nui', scaledScore });
+    newlyUnlocked.forEach((badge, i) => setTimeout(() => showBadgeToast(badge), i * 3400));
+  }
+
+  document.getElementById('retry-btn').addEventListener('click', launchGame);
+</script>
+</body>
+</html>

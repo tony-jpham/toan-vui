@@ -6,6 +6,8 @@ const HISTORY_MODULE_LABELS = {
   'cong-tru': 'Cộng trừ',
   'thu-thach-toc-do': 'Thử Thách Tốc Độ',
   'xem-gio': 'Xem giờ',
+  'dua-xe': 'Đua xe',
+  'leo-nui': 'Leo núi',
 };
 
 function pruneHistory(entries) {
