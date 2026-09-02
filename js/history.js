@@ -8,6 +8,7 @@ const HISTORY_MODULE_LABELS = {
   'xem-gio': 'Xem giờ',
   'dua-xe': 'Đua xe',
   'leo-nui': 'Leo núi',
+  'cau-ca': 'Câu cá',
 };
 
 function pruneHistory(entries) {
