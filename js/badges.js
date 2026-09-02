@@ -1,5 +1,7 @@
 const BADGES_KEY = 'toanvui_badges';
-const ALL_MODULES = ['cuu-chuong', 'cong-tru', 'thu-thach-toc-do', 'xem-gio'];
+// Chỉ 4 module luyện tập chính — không tính trò chơi (dua-xe, leo-nui), vì huy hiệu
+// này đo việc thử hết nội dung học, không phải thử hết mọi mini-game.
+const CORE_LEARNING_MODULES = ['cuu-chuong', 'cong-tru', 'thu-thach-toc-do', 'xem-gio'];
 
 /**
  * Streak lưu độc lập với history.js (không bị dọn theo hạn 14 ngày) vì mục đích
@@ -46,7 +48,7 @@ const BADGE_DEFINITIONS = [
   { id: 'sessions-20', icon: '🎓', name: '20 bài luyện tập', check: (s) => s.totalSessions >= 20 },
   { id: 'first-perfect', icon: '⭐', name: 'Điểm 10 đầu tiên', check: (s) => s.perfectScores >= 1 },
   { id: 'perfect-5', icon: '🏆', name: '5 lần đạt 10 điểm', check: (s) => s.perfectScores >= 5 },
-  { id: 'all-modules', icon: '🗺️', name: 'Thử hết mọi thử thách', check: (s) => ALL_MODULES.every((m) => s.modulesPlayed.includes(m)) },
+  { id: 'all-modules', icon: '🗺️', name: 'Thử hết mọi thử thách', check: (s) => CORE_LEARNING_MODULES.every((m) => s.modulesPlayed.includes(m)) },
   { id: 'streak-3', icon: '🔥', name: 'Streak 3 ngày', check: (s) => s.bestStreak >= 3 },
   { id: 'streak-7', icon: '💎', name: 'Streak 7 ngày', check: (s) => s.bestStreak >= 7 },
 ];

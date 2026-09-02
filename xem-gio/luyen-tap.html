@@ -111,14 +111,6 @@
 
     engine = new QuizEngine({
       questions,
-      containerIds: {
-        progressFill: 'progress-fill',
-        current: 'q-current',
-        total: 'q-total',
-        prompt: 'q-prompt',
-        answers: 'q-answers',
-        feedback: 'q-feedback',
-      },
       onFinish: (score, total) => showResult(score, total),
     });
 
@@ -135,12 +127,7 @@
     document.getElementById('quiz-section').style.display = 'none';
     document.getElementById('result-section').style.display = 'block';
     const scaledScore = Math.round((score / total) * 10);
-    renderResultScreen({
-      score,
-      total,
-      scaledScore,
-      containerIds: { score: 'result-score', detail: 'result-detail', message: 'result-message' },
-    });
+    renderResultScreen({ score, total, scaledScore });
     saveHistoryEntry({
       module: 'xem-gio',
       score,

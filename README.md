@@ -15,6 +15,7 @@ Website ôn tập môn Toán cho học sinh tiểu học Việt Nam (lớp 1 →
 4. **Hồ sơ người dùng** — nhập tên, tuổi, chọn avatar trước khi học; xem/sửa lại bất kỳ lúc nào; lưu `localStorage`, dùng để cá nhân hoá lời chào.
 5. **Lịch sử luyện tập** — mỗi bài hoàn thành được lưu lại 14 ngày, xem lại điểm số và số câu đúng/sai của từng lần làm bài để theo dõi tiến độ.
 6. **Streak & huy hiệu** — đếm số ngày luyện tập liên tiếp, mở khoá huy hiệu theo mốc thành tích (số bài đã làm, số lần đạt điểm tuyệt đối, số ngày streak), lưu vĩnh viễn để theo dõi tiến bộ lâu dài.
+7. **Trò chơi** — cùng câu hỏi cộng trừ/xem giờ trộn lẫn, khoác giao diện mini-game trực quan hoá tiến trình: Đua xe (thi với đối thủ máy) và Leo núi (hành trình cá nhân).
 
 **Ngoài phạm vi hiện tại**: đăng nhập/tài khoản, đồng bộ dữ liệu giữa nhiều thiết bị, backend/server.
 
@@ -42,6 +43,10 @@ toan-vui/
 │   └── thu-thach-toc-do.html      # 15 câu, Vừa/Khó, có đếm giờ tổng cho cả bài
 ├── xem-gio/
 │   └── luyen-tap.html             # 10 câu xem giờ, phút chẵn
+├── tro-choi/
+│   ├── menu.html                   # Chọn trò chơi
+│   ├── dua-xe.html                 # 10 câu, đua với đối thủ máy (biệt danh ngẫu nhiên)
+│   └── leo-nui.html                # 10 câu, leo núi theo tiến độ cá nhân
 ├── css/
 │   ├── style.css                  # Biến màu, layout, typography dùng chung
 │   └── components.css             # Quiz UI, modal, kết quả, đồng hồ
@@ -56,7 +61,8 @@ toan-vui/
 │   ├── cuu-chuong.js              # Sinh câu hỏi nhân/chia + đáp án nhiễu
 │   ├── cong-tru.js                # Sinh câu hỏi cộng/trừ theo độ khó + đáp án nhiễu
 │   ├── xem-gio.js                 # Sinh câu hỏi đọc giờ + đáp án nhiễu
-│   └── clock-render.js            # Vẽ mặt đồng hồ kim bằng SVG
+│   ├── clock-render.js            # Vẽ mặt đồng hồ kim bằng SVG
+│   └── mixed-questions.js         # Trộn câu hỏi cộng trừ + xem giờ, biệt danh đối thủ, render dùng chung cho các trò chơi
 └── README.md
 ```
 
@@ -126,10 +132,19 @@ Căn cứ: nghiên cứu về fact fluency khuyến nghị ~2–4 giây/phép t�
 
 ### VIII. Điều hướng dưới (bottom nav)
 
-- `js/bottom-nav.js`: 4 mục cố định — Menu (🏠), Thành tích (🏆 → `badges.html`), Lịch sử (📊 → `history.html`), Hồ sơ (👤 → `profile.html`) — icon cố định, không dùng avatar thật của người dùng.
-- Chỉ xuất hiện ở 4 trang gốc này (`menu.html`, `badges.html`, `history.html`, `profile.html`) — **không** có ở `index.html` (màn hình nhập liệu ban đầu, chưa có gì để điều hướng tới) và **không** có ở 4 trang làm bài (luồng tuyến tính riêng, không gian đáy màn hình đã dùng cho lưới đáp án).
+- `js/bottom-nav.js`: 4 mục cố định — Menu (🏠), Thành tích (🏆 → `badges.html`), Lịch sử (⌛️ → `history.html`), Hồ sơ (🐣 → `profile.html`) — icon cố định, không dùng avatar thật của người dùng.
+- Chỉ xuất hiện ở 4 trang gốc này (`menu.html`, `badges.html`, `history.html`, `profile.html`) — **không** có ở `index.html` (màn hình nhập liệu ban đầu, chưa có gì để điều hướng tới) và **không** có ở các trang làm bài/trò chơi (luồng tuyến tính riêng, không gian đáy màn hình đã dùng cho lưới đáp án).
 - Mục tương ứng trang hiện tại được tô đậm màu cam (`.active`) để định hướng người dùng đang ở đâu.
 - Trang gọi `renderBottomNav('<tên-file>.html')` sẽ tự thêm class `has-bottom-nav` vào `main.container` để tăng padding-bottom, tránh nội dung cuối trang bị thanh nav che khuất.
+
+### IX. Trò chơi
+
+- `tro-choi/menu.html`: màn chọn trò chơi, mở rộng thêm được khi có trò mới.
+- **Câu hỏi dùng chung** (`js/mixed-questions.js`): trộn ngẫu nhiên câu cộng trừ (mix Dễ+Vừa+Khó, tái dùng `cong-tru.js`) và câu xem giờ (tái dùng `xem-gio.js`), 10 câu mỗi lượt chơi. Cũng chứa `attachMixedQuestionRenderer()` — gắn vào 1 `QuizEngine` để tự hiển thị đúng dạng câu hỏi (đồng hồ SVG hay text phép tính), dùng chung cho Đua xe và Leo núi thay vì mỗi trang tự override `renderQuestion`.
+- **Đua xe** (`dua-xe.html`): người chơi đua với 1 đối thủ máy mang biệt danh ngẫu nhiên (ví dụ "Heo hăng hái", chọn từ `OPPONENT_NICKNAMES`). Mỗi câu đúng xe người chơi tiến lên; xe đối thủ tự chạy đều mỗi câu bất kể đúng/sai (mô phỏng tốc độ trung bình, không phụ thuộc người chơi) để tạo cảm giác thi đua. Kết thúc so vị trí 2 xe để xác định ai về nhất.
+- **Leo núi** (`leo-nui.html`): hành trình cá nhân, không có đối thủ. Mỗi câu đúng nhân vật leo lên 1 bậc trên sườn núi; câu sai thì đứng yên (không tụt lại), tránh cảm giác bị phạt. Kết thúc hiển thị đã leo được bao nhiêu bậc, có lên đến đỉnh (cắm cờ 🚩) hay chưa.
+- Cả 2 trò đều tái dùng `QuizEngine` nguyên vẹn cho phần câu hỏi/đáp án/chấm điểm; điểm khác biệt là callback `onAnswered(isCorrect)` mới trong `quiz-engine.js` — bắn ngay sau mỗi câu trả lời (trước khi tự động chuyển câu) để cập nhật vị trí xe/nhân vật theo thời gian thực.
+- Kết quả lưu vào lịch sử và huy hiệu như các module khác (`module: 'dua-xe'` / `'leo-nui'`), có nhãn hiển thị riêng trong `history.html` qua `HISTORY_MODULE_LABELS`.
 
 ## UI/UX
 

@@ -134,14 +134,6 @@
 
     engine = new QuizEngine({
       questions,
-      containerIds: {
-        progressFill: 'progress-fill',
-        current: 'q-current',
-        total: 'q-total',
-        prompt: 'q-prompt',
-        answers: 'q-answers',
-        feedback: 'q-feedback',
-      },
       onFinish: (score, total) => finishQuiz(score, total),
     });
     engine.start();
@@ -181,7 +173,6 @@
       score,
       total,
       scaledScore,
-      containerIds: { score: 'result-score', detail: 'result-detail', message: 'result-message' },
       message: timeUp
         ? `Bạn làm được ${score}/${total} câu trước khi hết giờ. Luyện thêm để nhanh hơn nhé! ⚡`
         : undefined,

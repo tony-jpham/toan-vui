@@ -107,7 +107,7 @@
 <script src="../js/clock-render.js"></script>
 <script src="../js/xem-gio.js"></script>
 <script src="../js/cong-tru.js"></script>
-<script src="../js/dua-xe.js"></script>
+<script src="../js/mixed-questions.js"></script>
 <script>
   const profile = requireProfileOrRedirect();
   renderGreeting('greeting');
@@ -129,7 +129,7 @@
   document.getElementById('start-btn').addEventListener('click', launchGame);
 
   function launchGame() {
-    const questions = buildDuaXeQuestions(TOTAL_QUESTIONS);
+    const questions = buildMixedQuestions(TOTAL_QUESTIONS);
     opponentName = pickOpponentNickname();
     playerProgress = 0;
     opponentProgress = 0;
@@ -146,34 +146,11 @@
 
     engine = new QuizEngine({
       questions,
-      containerIds: {
-        progressFill: 'progress-fill',
-        current: 'q-current',
-        total: 'q-total',
-        prompt: 'q-prompt',
-        answers: 'q-answers',
-        feedback: 'q-feedback',
-      },
       onAnswered: (isCorrect) => advanceRace(isCorrect),
       onFinish: (score, total) => finishGame(score, total),
     });
 
-    const originalRender = engine.renderQuestion.bind(engine);
-    engine.renderQuestion = function () {
-      originalRender();
-      const q = this.questions[this.currentIndex];
-      const clockHolder = document.getElementById('clock-holder');
-      const promptDisplay = document.getElementById('q-prompt-display');
-      if (q.clockSVG) {
-        clockHolder.style.display = 'block';
-        clockHolder.innerHTML = q.clockSVG;
-        promptDisplay.style.display = 'none';
-      } else {
-        clockHolder.style.display = 'none';
-        promptDisplay.style.display = 'block';
-        promptDisplay.textContent = q.prompt;
-      }
-    };
+    attachMixedQuestionRenderer(engine, { clockHolderId: 'clock-holder', promptDisplayId: 'q-prompt-display' });
 
     engine.start();
   }
@@ -206,12 +183,7 @@
     document.getElementById('result-emoji').textContent = playerWins ? '🏆' : '🥈';
     document.getElementById('result-title').textContent = playerWins ? `${profile.name} về nhất! 🎉` : `${opponentName} về nhất trước!`;
 
-    renderResultScreen({
-      score,
-      total,
-      scaledScore,
-      containerIds: { score: 'result-score', detail: 'result-detail', message: 'result-message' },
-    });
+    renderResultScreen({ score, total, scaledScore });
 
     const listEl = document.getElementById('race-result-list');
     const ranked = playerWins

@@ -31,10 +31,21 @@ function pickUniqueFrom(pool, count, excludeSet) {
  */
 const AUTO_ADVANCE_MS = 1500;
 
+// Id chuẩn dùng ở mọi trang quiz — cho phép gọi `new QuizEngine({questions, onFinish})`
+// mà không phải lặp lại object này ở từng trang. Truyền `containerIds` riêng để override.
+const DEFAULT_QUIZ_CONTAINER_IDS = {
+  progressFill: 'progress-fill',
+  current: 'q-current',
+  total: 'q-total',
+  prompt: 'q-prompt',
+  answers: 'q-answers',
+  feedback: 'q-feedback',
+};
+
 class QuizEngine {
   constructor({ questions, containerIds, onFinish, onAnswered, resultMessages }) {
     this.questions = questions;
-    this.containerIds = containerIds;
+    this.containerIds = containerIds || DEFAULT_QUIZ_CONTAINER_IDS;
     this.onFinish = onFinish;
     this.onAnswered = onAnswered;
     this.resultMessages = resultMessages || defaultResultMessages;
@@ -43,12 +54,12 @@ class QuizEngine {
     this.locked = false;
     this.advanceTimer = null;
 
-    this.progressFill = document.getElementById(containerIds.progressFill);
-    this.currentEl = document.getElementById(containerIds.current);
-    this.totalEl = document.getElementById(containerIds.total);
-    this.promptEl = document.getElementById(containerIds.prompt);
-    this.answersEl = document.getElementById(containerIds.answers);
-    this.feedbackEl = document.getElementById(containerIds.feedback);
+    this.progressFill = document.getElementById(this.containerIds.progressFill);
+    this.currentEl = document.getElementById(this.containerIds.current);
+    this.totalEl = document.getElementById(this.containerIds.total);
+    this.promptEl = document.getElementById(this.containerIds.prompt);
+    this.answersEl = document.getElementById(this.containerIds.answers);
+    this.feedbackEl = document.getElementById(this.containerIds.feedback);
 
     if (this.totalEl) this.totalEl.textContent = this.questions.length;
   }
@@ -144,10 +155,17 @@ function defaultResultMessages(score, total) {
   return 'Không sao đâu, luyện thêm chút là bạn sẽ giỏi hơn! 💪';
 }
 
+const DEFAULT_RESULT_CONTAINER_IDS = {
+  score: 'result-score',
+  detail: 'result-detail',
+  message: 'result-message',
+};
+
 function renderResultScreen({ score, total, scaledScore, containerIds, message }) {
-  const scoreEl = document.getElementById(containerIds.score);
-  const detailEl = document.getElementById(containerIds.detail);
-  const msgEl = document.getElementById(containerIds.message);
+  const ids = containerIds || DEFAULT_RESULT_CONTAINER_IDS;
+  const scoreEl = document.getElementById(ids.score);
+  const detailEl = document.getElementById(ids.detail);
+  const msgEl = document.getElementById(ids.message);
   if (scoreEl) scoreEl.textContent = `${scaledScore ?? score} điểm`;
   if (detailEl) detailEl.textContent = `Đúng ${score}/${total} câu`;
   if (msgEl) msgEl.textContent = message || defaultResultMessages(score, total);

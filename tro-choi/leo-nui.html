@@ -110,7 +110,7 @@
 <script src="../js/clock-render.js"></script>
 <script src="../js/xem-gio.js"></script>
 <script src="../js/cong-tru.js"></script>
-<script src="../js/dua-xe.js"></script>
+<script src="../js/mixed-questions.js"></script>
 <script>
   const profile = requireProfileOrRedirect();
   renderGreeting('greeting');
@@ -130,7 +130,7 @@
   document.getElementById('start-btn').addEventListener('click', launchGame);
 
   function launchGame() {
-    const questions = buildDuaXeQuestions(TOTAL_QUESTIONS);
+    const questions = buildMixedQuestions(TOTAL_QUESTIONS);
     stepsClimbed = 0;
 
     document.getElementById('climber-name').textContent = profile.name;
@@ -144,34 +144,11 @@
 
     engine = new QuizEngine({
       questions,
-      containerIds: {
-        progressFill: 'progress-fill',
-        current: 'q-current',
-        total: 'q-total',
-        prompt: 'q-prompt',
-        answers: 'q-answers',
-        feedback: 'q-feedback',
-      },
       onAnswered: (isCorrect) => advanceClimb(isCorrect),
       onFinish: (score, total) => finishGame(score, total),
     });
 
-    const originalRender = engine.renderQuestion.bind(engine);
-    engine.renderQuestion = function () {
-      originalRender();
-      const q = this.questions[this.currentIndex];
-      const clockHolder = document.getElementById('clock-holder');
-      const promptDisplay = document.getElementById('q-prompt-display');
-      if (q.clockSVG) {
-        clockHolder.style.display = 'block';
-        clockHolder.innerHTML = q.clockSVG;
-        promptDisplay.style.display = 'none';
-      } else {
-        clockHolder.style.display = 'none';
-        promptDisplay.style.display = 'block';
-        promptDisplay.textContent = q.prompt;
-      }
-    };
+    attachMixedQuestionRenderer(engine, { clockHolderId: 'clock-holder', promptDisplayId: 'q-prompt-display' });
 
     engine.start();
   }
@@ -200,12 +177,7 @@
       ? `${profile.name} đã lên đến đỉnh! 🎉`
       : `${profile.name} leo được ${stepsClimbed} bậc!`;
 
-    renderResultScreen({
-      score,
-      total,
-      scaledScore,
-      containerIds: { score: 'result-score', detail: 'result-detail', message: 'result-message' },
-    });
+    renderResultScreen({ score, total, scaledScore });
 
     const summaryBottomPct = (stepsClimbed / TOTAL_QUESTIONS) * CLIMB_MAX_BOTTOM;
     document.getElementById('summary-climber').style.bottom = summaryBottomPct + '%';
