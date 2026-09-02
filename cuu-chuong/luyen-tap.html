@@ -97,6 +97,7 @@
 <script src="../js/quiz-engine.js"></script>
 <script src="../js/exit-confirm.js"></script>
 <script src="../js/history.js"></script>
+<script src="../js/badges.js"></script>
 <script src="../js/cuu-chuong.js"></script>
 <script>
   requireProfileOrRedirect();
@@ -198,6 +199,8 @@
       total,
       scaledScore,
     });
+    const { newlyUnlocked } = recordBadgeProgress({ module: 'cuu-chuong', scaledScore });
+    newlyUnlocked.forEach((badge, i) => setTimeout(() => showBadgeToast(badge), i * 3400));
   }
 
   document.getElementById('retry-btn').addEventListener('click', () => {

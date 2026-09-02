@@ -1,5 +1,5 @@
 const HISTORY_KEY = 'toanvui_history';
-const HISTORY_RETENTION_DAYS = 7;
+const HISTORY_RETENTION_DAYS = 14;
 
 const HISTORY_MODULE_LABELS = {
   'cuu-chuong': 'Cửu chương',

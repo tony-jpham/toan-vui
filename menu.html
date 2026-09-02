@@ -42,6 +42,7 @@
   <div class="center">
     <h1>Bạn muốn chinh phục thử thách nào? 🎯</h1>
   </div>
+  <p class="streak-hint" id="streak-hint" style="display:none;"></p>
 
   <div class="menu-grid">
     <a href="cuu-chuong/luyen-tap.html" class="menu-card">
@@ -70,10 +71,21 @@
 <footer class="app-footer">Toán Vui 🧮 — Học mà chơi, chơi mà học</footer>
 
 <script src="js/profile.js"></script>
+<script src="js/badges.js"></script>
 <script>
   requireProfileOrRedirect();
   renderGreeting('greeting');
   renderAvatarLink('avatar-link');
+
+  const streakStats = getBadgeStats();
+  if (streakStats.currentStreak >= 1) {
+    const hintEl = document.getElementById('streak-hint');
+    const streakText = streakStats.currentStreak === 1
+      ? '🔥 Bạn vừa bắt đầu streak hôm nay, mai quay lại giữ lửa nhé!'
+      : `🔥 Streak ${streakStats.currentStreak} ngày — làm 1 bài nữa để giữ lửa nhé!`;
+    hintEl.textContent = streakText;
+    hintEl.style.display = 'block';
+  }
 </script>
 </body>
 </html>
