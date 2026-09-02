@@ -42,7 +42,7 @@ function renderGreeting(elementId) {
   const el = document.getElementById(elementId);
   if (!el) return;
   const profile = getProfile();
-  el.textContent = profile ? `Chào bé ${profile.name}! 👋` : '';
+  el.textContent = profile ? `Chào bé ${profile.name}!` : '';
 }
 
 function renderAvatarLink(elementId) {

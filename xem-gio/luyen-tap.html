@@ -57,7 +57,6 @@
     </div>
     <div id="q-feedback" class="feedback-banner" style="display:none;"></div>
     <div class="answers-grid" id="q-answers"></div>
-    <button id="next-btn" class="btn btn-secondary next-btn">Tiếp tục →</button>
   </section>
 
   <section id="result-section" style="display:none;">
@@ -85,6 +84,7 @@
 <script src="../js/sound.js"></script>
 <script src="../js/quiz-engine.js"></script>
 <script src="../js/exit-confirm.js"></script>
+<script src="../js/history.js"></script>
 <script src="../js/clock-render.js"></script>
 <script src="../js/xem-gio.js"></script>
 <script>
@@ -117,7 +117,6 @@
         prompt: 'q-prompt',
         answers: 'q-answers',
         feedback: 'q-feedback',
-        nextBtn: 'next-btn',
       },
       onFinish: (score, total) => showResult(score, total),
     });
@@ -140,6 +139,12 @@
       total,
       scaledScore,
       containerIds: { score: 'result-score', detail: 'result-detail', message: 'result-message' },
+    });
+    saveHistoryEntry({
+      module: 'xem-gio',
+      score,
+      total,
+      scaledScore,
     });
   }
 

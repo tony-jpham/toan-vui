@@ -29,7 +29,7 @@ function pickUniqueFrom(pool, count, excludeSet) {
  * end-of-quiz result screen. `questions` is an array of
  * { prompt, options: [{label, correct}], onAnswered? }.
  */
-const AUTO_ADVANCE_SECONDS = 3;
+const AUTO_ADVANCE_MS = 1500;
 
 class QuizEngine {
   constructor({ questions, containerIds, onFinish, resultMessages }) {
@@ -41,7 +41,6 @@ class QuizEngine {
     this.score = 0;
     this.locked = false;
     this.advanceTimer = null;
-    this.advanceCountdownInterval = null;
 
     this.progressFill = document.getElementById(containerIds.progressFill);
     this.currentEl = document.getElementById(containerIds.current);
@@ -49,10 +48,8 @@ class QuizEngine {
     this.promptEl = document.getElementById(containerIds.prompt);
     this.answersEl = document.getElementById(containerIds.answers);
     this.feedbackEl = document.getElementById(containerIds.feedback);
-    this.nextBtn = document.getElementById(containerIds.nextBtn);
 
     if (this.totalEl) this.totalEl.textContent = this.questions.length;
-    if (this.nextBtn) this.nextBtn.addEventListener('click', () => this.advanceNow());
   }
 
   start() {
@@ -71,7 +68,6 @@ class QuizEngine {
       this.feedbackEl.style.display = 'none';
       this.feedbackEl.textContent = '';
     }
-    if (this.nextBtn) this.nextBtn.style.display = 'none';
     this.promptEl.textContent = q.prompt;
     this.answersEl.innerHTML = '';
 
@@ -108,35 +104,11 @@ class QuizEngine {
       ToanVuiSound.playWrong();
     }
 
-    this.startAutoAdvance();
-  }
-
-  startAutoAdvance() {
-    let secondsLeft = AUTO_ADVANCE_SECONDS;
-    this.updateNextBtnLabel(secondsLeft);
-    if (this.nextBtn) this.nextBtn.style.display = 'inline-flex';
-
-    this.advanceCountdownInterval = setInterval(() => {
-      secondsLeft--;
-      this.updateNextBtnLabel(secondsLeft);
-    }, 1000);
-
-    this.advanceTimer = setTimeout(() => this.advanceNow(), AUTO_ADVANCE_SECONDS * 1000);
-  }
-
-  updateNextBtnLabel(secondsLeft) {
-    if (this.nextBtn) this.nextBtn.textContent = `Tiếp tục (${Math.max(secondsLeft, 0)}) →`;
-  }
-
-  advanceNow() {
-    clearTimeout(this.advanceTimer);
-    clearInterval(this.advanceCountdownInterval);
-    this.next();
+    this.advanceTimer = setTimeout(() => this.next(), AUTO_ADVANCE_MS);
   }
 
   stop() {
     clearTimeout(this.advanceTimer);
-    clearInterval(this.advanceCountdownInterval);
   }
 
   showFeedback(isCorrect) {

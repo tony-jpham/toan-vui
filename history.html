@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Lịch sử luyện tập — Toán Vui</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧮</text></svg>">
+<!-- Google tag (gtag.js): chỉ tải trên website production. -->
+<script>
+  if (
+    location.hostname === 'tony-jpham.github.io' &&
+    location.pathname.startsWith('/toan-vui/')
+  ) {
+    var gaScript = document.createElement('script');
+    gaScript.async = true;
+    gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-WPFRJK3EH4';
+    document.head.appendChild(gaScript);
+
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function(){window.dataLayer.push(arguments);};
+    window.gtag('js', new Date());
+    window.gtag('config', 'G-WPFRJK3EH4');
+  }
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+<header class="app-header">
+  <a href="menu.html" class="logo">🧮 Toán Vui</a>
+</header>
+
+<main class="container">
+  <a href="profile.html" class="breadcrumb">← Về hồ sơ của bé</a>
+  <h1 class="center">Lịch sử luyện tập 📊</h1>
+  <p class="subtitle center">Kết quả các bài đã làm trong 7 ngày gần đây</p>
+
+  <div class="card">
+    <div class="history-list" id="history-list"></div>
+    <div class="history-empty" id="history-empty" style="display:none;">
+      Bé chưa làm bài nào trong 7 ngày qua. Vào luyện tập ngay nhé! 🚀
+    </div>
+  </div>
+
+  <div class="center">
+    <a href="menu.html" class="btn btn-primary">Luyện tập ngay 🎈</a>
+  </div>
+</main>
+
+<footer class="app-footer">Toán Vui 🧮 — Học mà chơi, chơi mà học</footer>
+
+<script src="js/profile.js"></script>
+<script src="js/history.js"></script>
+<script>
+  requireProfileOrRedirect();
+
+  const entries = getHistory().sort((a, b) => b.timestamp - a.timestamp);
+  const listEl = document.getElementById('history-list');
+  const emptyEl = document.getElementById('history-empty');
+
+  if (entries.length === 0) {
+    emptyEl.style.display = 'block';
+  } else {
+    entries.forEach((entry) => {
+      const item = document.createElement('div');
+      item.className = 'history-item';
+      const moduleLabel = HISTORY_MODULE_LABELS[entry.module] || entry.module;
+      const levelPart = entry.levelLabel ? ` · ${entry.levelLabel}` : '';
+      item.innerHTML = `
+        <div class="history-info">
+          <div class="history-module">${moduleLabel}${levelPart}</div>
+          <div class="history-meta">${formatHistoryDate(entry.timestamp)} · Đúng ${entry.score}/${entry.total} câu</div>
+        </div>
+        <div class="history-score">${entry.scaledScore} điểm</div>
+      `;
+      listEl.appendChild(item);
+    });
+  }
+</script>
+</body>
+</html>

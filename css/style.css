@@ -97,10 +97,11 @@ a {
   height: 44px;
   min-height: 44px;
   border-radius: 50%;
-  background: var(--bg-soft);
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border: 2px solid #fff;
   font-size: 1.5rem;
   text-decoration: none;
-  box-shadow: var(--card-shadow);
+  box-shadow: 0 4px 10px rgba(255, 138, 91, 0.35);
 }
 
 .avatar-link:active {
