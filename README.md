@@ -32,7 +32,7 @@ Website ôn tập môn Toán cho học sinh tiểu học Việt Nam (lớp 1 →
 ```
 toan-vui/
 ├── index.html                    # Trang chào — nhập tên/tuổi/avatar
-├── menu.html                     # Menu chính, điều hướng tới 4 chế độ luyện tập
+├── menu.html                     # Menu chính, điều hướng tới 4 module luyện tập + Trò chơi
 ├── profile.html                  # Xem & sửa hồ sơ người dùng (tên, tuổi, avatar)
 ├── badges.html                   # Streak + huy hiệu thành tích
 ├── history.html                  # Xem lịch sử luyện tập 14 ngày gần nhất
@@ -44,9 +44,9 @@ toan-vui/
 ├── xem-gio/
 │   └── luyen-tap.html             # 10 câu xem giờ, phút chẵn
 ├── tro-choi/
-│   ├── menu.html                   # Chọn trò chơi
-│   ├── dua-xe.html                 # 10 câu, đua với đối thủ máy (biệt danh ngẫu nhiên)
-│   └── leo-nui.html                # 10 câu, leo núi theo tiến độ cá nhân
+│   ├── menu.html               # Chọn trò chơi
+│   ├── dua-xe.html             # 10 câu, đua với đối thủ máy (biệt danh ngẫu nhiên)
+│   └── leo-nui.html            # 10 câu, leo núi theo tiến độ cá nhân
 ├── css/
 │   ├── style.css                  # Biến màu, layout, typography dùng chung
 │   └── components.css             # Quiz UI, modal, kết quả, đồng hồ
@@ -57,6 +57,7 @@ toan-vui/
 │   ├── sound.js                   # Âm thanh đúng/sai/hoàn thành, sinh bằng Web Audio API
 │   ├── history.js                 # Lưu/đọc/tự dọn lịch sử luyện tập (14 ngày) trong localStorage
 │   ├── badges.js                  # Streak ngày liên tiếp + huy hiệu thành tích, lưu vĩnh viễn
+│   ├── layout.js                  # Header/footer dùng chung, lắp qua JS vào slot rỗng ở mỗi trang
 │   ├── bottom-nav.js              # Thanh điều hướng dưới, dùng ở menu/badges/history/profile
 │   ├── cuu-chuong.js              # Sinh câu hỏi nhân/chia + đáp án nhiễu
 │   ├── cong-tru.js                # Sinh câu hỏi cộng/trừ theo độ khó + đáp án nhiễu
@@ -113,10 +114,12 @@ Căn cứ: nghiên cứu về fact fluency khuyến nghị ~2–4 giây/phép t�
 - **Lưới đáp án 2×2**: 4 lựa chọn luôn xếp cố định 2 cột × 2 dòng, tiết kiệm không gian hiển thị trên điện thoại.
 - **Thoát bài** (`exit-confirm.js`): nút ✕ trong thanh trạng thái mở popup xác nhận "Bạn muốn thoát bài không?" — chọn "Làm tiếp" để đóng popup, hoặc "Thoát bài" để dừng mọi timer và quay về menu chính.
 - **Kết quả**: hiển thị điểm số theo thang 10 (làm tròn từ tỉ lệ đúng/tổng) làm nội dung chính, kèm dòng phụ nhỏ "Đúng X/Y câu", và lời động viên thay đổi theo mức điểm.
+- **`QuizEngine` dùng `containerIds` mặc định** khi không truyền — mọi trang quiz đều dùng chung 1 bộ id (`progress-fill`, `q-current`, `q-total`, `q-prompt`, `q-answers`, `q-feedback`), nên phần lớn lời gọi `new QuizEngine({questions, onFinish})` không cần lặp lại object 6 dòng đó. `renderResultScreen()` cũng có id mặc định tương tự.
+- **`showResultSection()` + `recordQuizCompletion()`** (`quiz-engine.js`): gộp phần luôn giống nhau ở cuối mỗi bài — ẩn quiz-section/hiện result-section, và lưu lịch sử + cập nhật huy hiệu + xếp hàng toast mừng huy hiệu mới. Mỗi trang chỉ còn viết phần thật sự khác biệt (tuỳ chỉnh UI riêng như bảng xếp hạng đua xe, tóm tắt leo núi) trước khi gọi 2 hàm này.
 
 ### VI. Lịch sử luyện tập
 
-- Mỗi khi hoàn thành một bài (ở cả 4 module), kết quả được lưu vào `localStorage` (key `toanvui_history`) qua `saveHistoryEntry()`: module, độ khó (nếu có), điểm số, số câu đúng/tổng, thời điểm làm bài.
+- Mỗi khi hoàn thành một bài (ở cả 4 module + 2 trò chơi), kết quả được lưu vào `localStorage` (key `toanvui_history`) qua `saveHistoryEntry()` (gọi gián tiếp qua `recordQuizCompletion()`): module, độ khó (nếu có), điểm số, số câu đúng/tổng, thời điểm làm bài.
 - **Không** lưu chi tiết từng câu hỏi/đáp án đã chọn — chỉ lưu tổng kết mỗi lần làm bài, đủ để theo dõi tiến độ mà không phình dữ liệu.
 - **Tự động hết hạn sau 14 ngày**: mỗi lần đọc lịch sử (`getHistory()`), các bản ghi cũ hơn 14 ngày bị lọc bỏ và ghi đè lại vào `localStorage` — dữ liệu không tích luỹ vô hạn.
 - `history.html`: liệt kê các lần làm bài trong 14 ngày qua, mới nhất lên đầu, mỗi dòng gồm tên module + độ khó, giờ/ngày làm bài, số câu đúng/tổng, và điểm số nổi bật. Có trạng thái rỗng khi chưa làm bài nào. Truy cập qua bottom nav.
@@ -191,6 +194,8 @@ ID GA4 thật được cấu hình trực tiếp trong từng file `.html` (khô
 - Bảng cửu chương MVP chỉ 1–9.
 - Không có màn hình chọn lớp (1→5) — người dùng tự chọn độ khó theo từng module.
 - Repo GitHub công khai (`public`) để chạy GitHub Pages miễn phí, deploy trực tiếp từ nhánh `main`.
+- Header/footer lắp qua JS (`layout.js`) vào slot rỗng ở mỗi trang, cùng pattern với `bottom-nav.js` — tránh lặp HTML ở 12 trang mà vẫn giữ kiến trúc multi-page không build tool. Sửa cấu trúc header/footer chỉ cần đổi 1 file.
+- Huy hiệu "Thử hết mọi thử thách" (`badges.js`) chỉ tính 4 module luyện tập chính (`CORE_LEARNING_MODULES`), không tính trò chơi — 2 khái niệm khác mục đích (đo việc học vs. đo việc chơi) nên cố tình không dùng chung danh sách với `HISTORY_MODULE_LABELS`.
 
 ## Việc cần làm tiếp (backlog)
 

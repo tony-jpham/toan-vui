@@ -68,10 +68,13 @@
   </div>
 </main>
 
-<footer class="app-footer">Toán Vui 🌈 — Học mà chơi, chơi mà học</footer>
+<div id="app-footer-slot"></div>
 
 <script src="js/profile.js"></script>
+<script src="js/layout.js"></script>
 <script>
+  renderAppFooter();
+
   let selectedAvatar = AVATAR_OPTIONS[0];
 
   const avatarGridEl = document.getElementById('avatar-grid');

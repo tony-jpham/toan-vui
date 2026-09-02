@@ -30,10 +30,7 @@
 </head>
 <body>
 
-<header class="app-header">
-  <a href="../menu.html" class="logo">🌈 Toán Vui</a>
-  <span class="greeting" id="greeting"></span>
-</header>
+<div id="app-header-slot"></div>
 
 <main class="container">
 
@@ -90,7 +87,7 @@
 
 </main>
 
-<footer class="app-footer">Toán Vui 🌈 — Học mà chơi, chơi mà học</footer>
+<div id="app-footer-slot"></div>
 
 <script src="../js/profile.js"></script>
 <script src="../js/sound.js"></script>
@@ -98,9 +95,12 @@
 <script src="../js/exit-confirm.js"></script>
 <script src="../js/history.js"></script>
 <script src="../js/badges.js"></script>
+<script src="../js/layout.js"></script>
 <script src="../js/cuu-chuong.js"></script>
 <script>
   requireProfileOrRedirect();
+  renderAppHeader({ logoHref: '../menu.html', showGreeting: true });
+  renderAppFooter();
   renderGreeting('greeting');
 
   let engineRef = null;
@@ -175,19 +175,16 @@
   }
 
   function showResult(score, total) {
-    document.getElementById('quiz-section').style.display = 'none';
-    document.getElementById('result-section').style.display = 'block';
+    showResultSection();
     const scaledScore = Math.round((score / total) * 10);
     renderResultScreen({ score, total, scaledScore });
-    saveHistoryEntry({
+    recordQuizCompletion({
       module: 'cuu-chuong',
       levelLabel: currentQuizType === 'single' ? `Bảng ${currentQuizParam}` : `Trộn ${currentQuizParam.length} bảng`,
       score,
       total,
       scaledScore,
     });
-    const { newlyUnlocked } = recordBadgeProgress({ module: 'cuu-chuong', scaledScore });
-    newlyUnlocked.forEach((badge, i) => setTimeout(() => showBadgeToast(badge), i * 3400));
   }
 
   document.getElementById('retry-btn').addEventListener('click', () => {

@@ -170,3 +170,23 @@ function renderResultScreen({ score, total, scaledScore, containerIds, message }
   if (detailEl) detailEl.textContent = `Đúng ${score}/${total} câu`;
   if (msgEl) msgEl.textContent = message || defaultResultMessages(score, total);
 }
+
+/**
+ * Ẩn quiz-section, hiện result-section — dùng chung ở mọi trang quiz/trò chơi.
+ * Truyền id khác nếu trang không dùng tên section mặc định.
+ */
+function showResultSection({ quizSectionId = 'quiz-section', resultSectionId = 'result-section' } = {}) {
+  document.getElementById(quizSectionId).style.display = 'none';
+  document.getElementById(resultSectionId).style.display = 'block';
+}
+
+/**
+ * Gộp 3 bước luôn đi cùng nhau ở cuối mỗi bài: lưu lịch sử, cập nhật huy hiệu,
+ * và xếp hàng toast mừng huy hiệu mới (cách nhau 3.4s nếu đạt nhiều huy hiệu).
+ * Dùng chung cho mọi module/trò chơi — chỉ khác `module` và `levelLabel`.
+ */
+function recordQuizCompletion({ module, levelLabel, score, total, scaledScore }) {
+  saveHistoryEntry({ module, levelLabel, score, total, scaledScore });
+  const { newlyUnlocked } = recordBadgeProgress({ module, scaledScore });
+  newlyUnlocked.forEach((badge, i) => setTimeout(() => showBadgeToast(badge), i * 3400));
+}

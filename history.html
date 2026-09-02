@@ -30,9 +30,7 @@
 </head>
 <body>
 
-<header class="app-header">
-  <a href="menu.html" class="logo">🌈 Toán Vui</a>
-</header>
+<div id="app-header-slot"></div>
 
 <main class="container">
   <h1 class="center">Lịch sử luyện tập ⌛️</h1>
@@ -50,13 +48,16 @@
   </div>
 </main>
 
-<footer class="app-footer">Toán Vui 🌈 — Học mà chơi, chơi mà học</footer>
+<div id="app-footer-slot"></div>
 
 <script src="js/profile.js"></script>
 <script src="js/history.js"></script>
 <script src="js/bottom-nav.js"></script>
+<script src="js/layout.js"></script>
 <script>
   requireProfileOrRedirect();
+  renderAppHeader();
+  renderAppFooter();
   renderBottomNav('history.html');
 
   const entries = getHistory().sort((a, b) => b.timestamp - a.timestamp);

@@ -30,10 +30,7 @@
 </head>
 <body>
 
-<header class="app-header">
-  <a href="../menu.html" class="logo">🌈 Toán Vui</a>
-  <span class="greeting" id="greeting"></span>
-</header>
+<div id="app-header-slot"></div>
 
 <main class="container">
 
@@ -75,7 +72,7 @@
 
 </main>
 
-<footer class="app-footer">Toán Vui 🌈 — Học mà chơi, chơi mà học</footer>
+<div id="app-footer-slot"></div>
 
 <!-- q-prompt cần tồn tại cho QuizEngine dù không hiển thị (nội dung câu hỏi là mặt đồng hồ SVG) -->
 <div id="q-prompt" style="display:none;"></div>
@@ -86,10 +83,13 @@
 <script src="../js/exit-confirm.js"></script>
 <script src="../js/history.js"></script>
 <script src="../js/badges.js"></script>
+<script src="../js/layout.js"></script>
 <script src="../js/clock-render.js"></script>
 <script src="../js/xem-gio.js"></script>
 <script>
   requireProfileOrRedirect();
+  renderAppHeader({ logoHref: '../menu.html', showGreeting: true });
+  renderAppFooter();
   renderGreeting('greeting');
 
   let engine = null;
@@ -124,18 +124,10 @@
   }
 
   function showResult(score, total) {
-    document.getElementById('quiz-section').style.display = 'none';
-    document.getElementById('result-section').style.display = 'block';
+    showResultSection();
     const scaledScore = Math.round((score / total) * 10);
     renderResultScreen({ score, total, scaledScore });
-    saveHistoryEntry({
-      module: 'xem-gio',
-      score,
-      total,
-      scaledScore,
-    });
-    const { newlyUnlocked } = recordBadgeProgress({ module: 'xem-gio', scaledScore });
-    newlyUnlocked.forEach((badge, i) => setTimeout(() => showBadgeToast(badge), i * 3400));
+    recordQuizCompletion({ module: 'xem-gio', score, total, scaledScore });
   }
 
   document.getElementById('retry-btn').addEventListener('click', launchQuiz);

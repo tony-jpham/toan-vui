@@ -30,10 +30,7 @@
 </head>
 <body>
 
-<header class="app-header">
-  <a href="../menu.html" class="logo">🌈 Toán Vui</a>
-  <span class="greeting" id="greeting"></span>
-</header>
+<div id="app-header-slot"></div>
 
 <main class="container">
   <a href="../menu.html" class="breadcrumb">← Menu</a>
@@ -54,11 +51,14 @@
   </div>
 </main>
 
-<footer class="app-footer">Toán Vui 🌈 — Học mà chơi, chơi mà học</footer>
+<div id="app-footer-slot"></div>
 
 <script src="../js/profile.js"></script>
+<script src="../js/layout.js"></script>
 <script>
   requireProfileOrRedirect();
+  renderAppHeader({ logoHref: '../menu.html', showGreeting: true });
+  renderAppFooter();
   renderGreeting('greeting');
 </script>
 </body>

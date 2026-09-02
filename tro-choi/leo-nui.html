@@ -30,10 +30,7 @@
 </head>
 <body>
 
-<header class="app-header">
-  <a href="../menu.html" class="logo">🌈 Toán Vui</a>
-  <span class="greeting" id="greeting"></span>
-</header>
+<div id="app-header-slot"></div>
 
 <main class="container">
 
@@ -96,7 +93,7 @@
 
 </main>
 
-<footer class="app-footer">Toán Vui 🌈 — Học mà chơi, chơi mà học</footer>
+<div id="app-footer-slot"></div>
 
 <!-- q-prompt cần tồn tại cho QuizEngine dù không hiển thị trực tiếp -->
 <div id="q-prompt" style="display:none;"></div>
@@ -107,12 +104,15 @@
 <script src="../js/exit-confirm.js"></script>
 <script src="../js/history.js"></script>
 <script src="../js/badges.js"></script>
+<script src="../js/layout.js"></script>
 <script src="../js/clock-render.js"></script>
 <script src="../js/xem-gio.js"></script>
 <script src="../js/cong-tru.js"></script>
 <script src="../js/mixed-questions.js"></script>
 <script>
   const profile = requireProfileOrRedirect();
+  renderAppHeader({ logoHref: '../menu.html', showGreeting: true });
+  renderAppFooter();
   renderGreeting('greeting');
 
   const TOTAL_QUESTIONS = 10;
@@ -167,8 +167,7 @@
   }
 
   function finishGame(score, total) {
-    document.getElementById('quiz-section').style.display = 'none';
-    document.getElementById('result-section').style.display = 'block';
+    showResultSection();
     const scaledScore = Math.round((score / total) * 10);
 
     const reachedTop = stepsClimbed >= total;
@@ -182,14 +181,7 @@
     const summaryBottomPct = (stepsClimbed / TOTAL_QUESTIONS) * CLIMB_MAX_BOTTOM;
     document.getElementById('summary-climber').style.bottom = summaryBottomPct + '%';
 
-    saveHistoryEntry({
-      module: 'leo-nui',
-      score,
-      total,
-      scaledScore,
-    });
-    const { newlyUnlocked } = recordBadgeProgress({ module: 'leo-nui', scaledScore });
-    newlyUnlocked.forEach((badge, i) => setTimeout(() => showBadgeToast(badge), i * 3400));
+    recordQuizCompletion({ module: 'leo-nui', score, total, scaledScore });
   }
 
   document.getElementById('retry-btn').addEventListener('click', launchGame);
