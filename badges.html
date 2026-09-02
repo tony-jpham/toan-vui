@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Thành tích — Toán Vui</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌈</text></svg>">
+<!-- Google tag (gtag.js): chỉ tải trên website production. -->
+<script>
+  if (
+    location.hostname === 'tony-jpham.github.io' &&
+    location.pathname.startsWith('/toan-vui/')
+  ) {
+    var gaScript = document.createElement('script');
+    gaScript.async = true;
+    gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-WPFRJK3EH4';
+    document.head.appendChild(gaScript);
+
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function(){window.dataLayer.push(arguments);};
+    window.gtag('js', new Date());
+    window.gtag('config', 'G-WPFRJK3EH4');
+  }
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+<header class="app-header">
+  <a href="menu.html" class="logo">🌈 Toán Vui</a>
+</header>
+
+<main class="container">
+  <h1 class="center">Thành tích 🏆</h1>
+
+  <div class="card streak-card">
+    <div class="streak-icon">🔥</div>
+    <div>
+      <div class="streak-value" id="streak-value">0</div>
+      <div class="streak-label">ngày liên tiếp</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Huy hiệu</h2>
+    <div class="badge-grid" id="badge-grid"></div>
+  </div>
+</main>
+
+<script src="js/profile.js"></script>
+<script src="js/badges.js"></script>
+<script src="js/bottom-nav.js"></script>
+<script>
+  requireProfileOrRedirect();
+  renderBottomNav('badges.html');
+
+  const badgeStats = getBadgeStats();
+  document.getElementById('streak-value').textContent = badgeStats.currentStreak;
+
+  const badgeGridEl = document.getElementById('badge-grid');
+  getBadgeProgress().forEach((badge) => {
+    const item = document.createElement('div');
+    item.className = 'badge-item' + (badge.unlocked ? '' : ' locked');
+    item.innerHTML = `
+      <div class="badge-icon">${badge.icon}</div>
+      <div class="badge-name">${badge.name}</div>
+    `;
+    badgeGridEl.appendChild(item);
+  });
+</script>
+</body>
+</html>

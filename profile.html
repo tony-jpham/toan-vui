@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Hồ sơ của bạn — Toán Vui</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧮</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌈</text></svg>">
 <!-- Google tag (gtag.js): chỉ tải trên website production. -->
 <script>
   if (
@@ -31,25 +31,11 @@
 <body>
 
 <header class="app-header">
-  <a href="menu.html" class="logo">🧮 Toán Vui</a>
+  <a href="menu.html" class="logo">🌈 Toán Vui</a>
 </header>
 
 <main class="container">
-  <a href="menu.html" class="breadcrumb">← Về menu chính</a>
   <h1 class="center">Hồ sơ của bạn 🧸</h1>
-
-  <div class="card streak-card">
-    <div class="streak-icon">🔥</div>
-    <div>
-      <div class="streak-value" id="streak-value">0</div>
-      <div class="streak-label">ngày liên tiếp</div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>Điểm thưởng 🏆</h2>
-    <div class="badge-grid" id="badge-grid"></div>
-  </div>
 
   <div class="card">
     <div class="avatar-preview" id="avatar-preview"></div>
@@ -71,37 +57,17 @@
   </div>
 
   <div class="card center">
-    <p class="subtitle">Xem lại kết quả các bài đã luyện tập trong 14 ngày qua</p>
-    <a href="history.html" class="btn btn-secondary">Xem lịch sử luyện tập 📊</a>
-  </div>
-
-  <div class="card center">
     <p class="subtitle">Muốn đổi sang người khác dùng máy này?</p>
     <button id="switch-profile-btn" class="btn btn-outline">Đổi người khác</button>
   </div>
 </main>
 
-<footer class="app-footer">Toán Vui 🧮 — Học mà chơi, chơi mà học</footer>
-
 <script src="js/profile.js"></script>
-<script src="js/badges.js"></script>
+<script src="js/bottom-nav.js"></script>
 <script>
   const profile = requireProfileOrRedirect();
+  renderBottomNav('profile.html');
   let selectedAvatar = profile ? profile.avatar : AVATAR_OPTIONS[0];
-
-  const badgeStats = getBadgeStats();
-  document.getElementById('streak-value').textContent = badgeStats.currentStreak;
-
-  const badgeGridEl = document.getElementById('badge-grid');
-  getBadgeProgress().forEach((badge) => {
-    const item = document.createElement('div');
-    item.className = 'badge-item' + (badge.unlocked ? '' : ' locked');
-    item.innerHTML = `
-      <div class="badge-icon">${badge.icon}</div>
-      <div class="badge-name">${badge.name}</div>
-    `;
-    badgeGridEl.appendChild(item);
-  });
 
   document.getElementById('avatar-preview').textContent = selectedAvatar;
   document.getElementById('child-name').value = profile.name;

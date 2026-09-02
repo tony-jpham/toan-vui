@@ -1,4 +1,4 @@
-# Toán Vui 🧮✨
+# Toán Vui 🌈✨
 
 Website ôn tập môn Toán cho học sinh tiểu học Việt Nam (lớp 1 → lớp 5). Chạy hoàn toàn trên trình duyệt (HTML/CSS/JS thuần, không build tool), triển khai trên **GitHub Pages**.
 
@@ -33,6 +33,7 @@ toan-vui/
 ├── index.html                    # Trang chào — nhập tên/tuổi/avatar
 ├── menu.html                     # Menu chính, điều hướng tới 4 chế độ luyện tập
 ├── profile.html                  # Xem & sửa hồ sơ người dùng (tên, tuổi, avatar)
+├── badges.html                   # Streak + huy hiệu thành tích
 ├── history.html                  # Xem lịch sử luyện tập 14 ngày gần nhất
 ├── cuu-chuong/
 │   └── luyen-tap.html             # Trắc nghiệm 1 bảng / trộn nhiều bảng
@@ -51,6 +52,7 @@ toan-vui/
 │   ├── sound.js                   # Âm thanh đúng/sai/hoàn thành, sinh bằng Web Audio API
 │   ├── history.js                 # Lưu/đọc/tự dọn lịch sử luyện tập (14 ngày) trong localStorage
 │   ├── badges.js                  # Streak ngày liên tiếp + huy hiệu thành tích, lưu vĩnh viễn
+│   ├── bottom-nav.js              # Thanh điều hướng dưới, dùng ở menu/badges/history/profile
 │   ├── cuu-chuong.js              # Sinh câu hỏi nhân/chia + đáp án nhiễu
 │   ├── cong-tru.js                # Sinh câu hỏi cộng/trừ theo độ khó + đáp án nhiễu
 │   ├── xem-gio.js                 # Sinh câu hỏi đọc giờ + đáp án nhiễu
@@ -94,7 +96,7 @@ Căn cứ: nghiên cứu về fact fluency khuyến nghị ~2–4 giây/phép t�
 ### IV. Hồ sơ người dùng
 
 - `index.html`: form nhập **tên** + **số tuổi** + chọn **avatar** (12 emoji động vật dễ thương: 🐻🐰🐱🐶🦊🐼🦁🐸🐵🦄🐷🐨), nút "Bắt đầu học" → lưu `localStorage` (key `toanvui_profile = { name, age, avatar }`).
-- `profile.html`: xem lại và sửa hồ sơ (tên, tuổi, avatar) bất kỳ lúc nào, có preview avatar lớn ở đầu trang. Truy cập qua badge avatar ở góc phải header của `menu.html`.
+- `profile.html`: xem lại và sửa hồ sơ (tên, tuổi, avatar) bất kỳ lúc nào, có preview avatar lớn ở đầu trang. Truy cập qua badge avatar ở góc phải header của `menu.html`, hoặc qua bottom nav.
 - Lần sau mở lại `index.html`: chào bằng tên, có nút "Đổi người khác" để xoá hồ sơ và nhập lại từ đầu (cũng có ở `profile.html`).
 - Mọi trang luyện tập đều gọi `requireProfileOrRedirect()` — chưa có hồ sơ sẽ tự chuyển về `index.html`.
 
@@ -111,16 +113,23 @@ Căn cứ: nghiên cứu về fact fluency khuyến nghị ~2–4 giây/phép t�
 - Mỗi khi hoàn thành một bài (ở cả 4 module), kết quả được lưu vào `localStorage` (key `toanvui_history`) qua `saveHistoryEntry()`: module, độ khó (nếu có), điểm số, số câu đúng/tổng, thời điểm làm bài.
 - **Không** lưu chi tiết từng câu hỏi/đáp án đã chọn — chỉ lưu tổng kết mỗi lần làm bài, đủ để theo dõi tiến độ mà không phình dữ liệu.
 - **Tự động hết hạn sau 14 ngày**: mỗi lần đọc lịch sử (`getHistory()`), các bản ghi cũ hơn 14 ngày bị lọc bỏ và ghi đè lại vào `localStorage` — dữ liệu không tích luỹ vô hạn.
-- `history.html`: liệt kê các lần làm bài trong 14 ngày qua, mới nhất lên đầu, mỗi dòng gồm tên module + độ khó, giờ/ngày làm bài, số câu đúng/tổng, và điểm số nổi bật. Có trạng thái rỗng khi chưa làm bài nào. Truy cập qua nút "Xem lịch sử luyện tập" trong `profile.html`.
+- `history.html`: liệt kê các lần làm bài trong 14 ngày qua, mới nhất lên đầu, mỗi dòng gồm tên module + độ khó, giờ/ngày làm bài, số câu đúng/tổng, và điểm số nổi bật. Có trạng thái rỗng khi chưa làm bài nào. Truy cập qua bottom nav.
 
 ### VII. Streak & huy hiệu
 
 - Lưu **độc lập** với lịch sử 14 ngày, trong key `localStorage` riêng (`toanvui_badges`) qua `js/badges.js` — không bị dọn dẹp theo thời gian, vì mục đích là thành tích lâu dài chứ không phải xem lại gần đây.
 - **Streak**: mỗi khi hoàn thành 1 bài, `recordBadgeProgress()` so sánh ngày hiện tại với ngày hoạt động gần nhất — nếu là hôm qua thì streak +1, nếu đã tính hôm nay thì giữ nguyên, nếu bỏ lỡ ≥1 ngày thì reset về 1. Lưu cả `currentStreak` (đang chạy) và `bestStreak` (kỷ lục).
 - **Huy hiệu** (`BADGE_DEFINITIONS`): mở khoá dựa trên 3 loại mốc — số bài đã làm (1, 5, 20 bài), số lần đạt điểm 10/10 (1, 5 lần), và số ngày streak (3, 7 ngày) — cộng thêm huy hiệu "thử hết mọi thử thách" khi đã chơi cả 4 module ít nhất 1 lần.
-- Hiển thị ở `profile.html`: thẻ streak nổi bật (🔥 số ngày liên tiếp) và lưới huy hiệu — huy hiệu đã mở khoá hiển thị đầy màu, chưa mở khoá hiển thị mờ xám (`.locked`).
+- Hiển thị ở `badges.html` (trang riêng, tách khỏi `profile.html`): thẻ streak nổi bật (🔥 số ngày liên tiếp) và lưới huy hiệu — huy hiệu đã mở khoá hiển thị đầy màu, chưa mở khoá hiển thị mờ xám (`.locked`).
 - **Gợi nhắc streak ở `menu.html`**: dòng nhỏ dưới tiêu đề, chỉ hiện khi `currentStreak ≥ 1` — "Bạn vừa bắt đầu streak hôm nay..." nếu streak = 1, hoặc "Streak N ngày — làm 1 bài nữa để giữ lửa nhé!" nếu ≥ 2. Ẩn hoàn toàn nếu chưa từng làm bài, tránh cảm giác nhắc nhở tiêu cực.
 - **Toast mừng huy hiệu mới**: `recordBadgeProgress()` trả về `newlyUnlocked` (huy hiệu vừa đạt được so với trước khi cập nhật, bằng cách so sánh trạng thái mở khoá trước/sau). Ở màn kết quả mỗi bài, các huy hiệu mới được hiện lần lượt bằng `showBadgeToast()` — toast nổi ở đáy màn hình, tự ẩn sau 3.2 giây, cách nhau 3.4 giây nếu đạt nhiều huy hiệu cùng lúc.
+
+### VIII. Điều hướng dưới (bottom nav)
+
+- `js/bottom-nav.js`: 4 mục cố định — Menu (🏠), Thành tích (🏆 → `badges.html`), Lịch sử (📊 → `history.html`), Hồ sơ (👤 → `profile.html`) — icon cố định, không dùng avatar thật của người dùng.
+- Chỉ xuất hiện ở 4 trang gốc này (`menu.html`, `badges.html`, `history.html`, `profile.html`) — **không** có ở `index.html` (màn hình nhập liệu ban đầu, chưa có gì để điều hướng tới) và **không** có ở 4 trang làm bài (luồng tuyến tính riêng, không gian đáy màn hình đã dùng cho lưới đáp án).
+- Mục tương ứng trang hiện tại được tô đậm màu cam (`.active`) để định hướng người dùng đang ở đâu.
+- Trang gọi `renderBottomNav('<tên-file>.html')` sẽ tự thêm class `has-bottom-nav` vào `main.container` để tăng padding-bottom, tránh nội dung cuối trang bị thanh nav che khuất.
 
 ## UI/UX
 
