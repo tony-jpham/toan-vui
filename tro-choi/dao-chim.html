@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Thử Thách Tốc Độ — Toán Vui</title>
+<title>Đảo Chìm — Toán Vui</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌈</text></svg>">
 <!-- Google tag (gtag.js): chỉ tải trên website production. -->
 <script>
@@ -35,9 +35,9 @@
 <main class="container">
 
   <section id="setup-section">
-    <a href="../menu.html" class="breadcrumb">← Menu</a>
-    <h1 class="center">Thử Thách Tốc Độ ⚡</h1>
-    <p class="subtitle center">Bạn đã sẵn sàng tăng tốc chưa? Thời gian đang chạy đó nha! 🏃</p>
+    <a href="menu.html" class="breadcrumb">← Menu</a>
+    <h1 class="center">Đảo Chìm 🏝️</h1>
+    <p class="subtitle center">Nước đang dâng lên! Trả lời đúng thật nhanh để ném phao cứu sinh nhé!</p>
 
     <div class="card">
       <p>15 câu cộng trừ, có tính giờ cho cả bài. Chọn độ khó nhé:</p>
@@ -57,6 +57,20 @@
       </div>
     </div>
     <div class="progress-bar"><div class="progress-bar-fill" id="progress-fill"></div></div>
+
+    <div class="island-stats">
+      <span>Mực nước</span>
+      <span class="water-level-label" id="water-level-label">0%</span>
+    </div>
+    <div class="island-box">
+      <div class="island-lifebuoy" id="lifebuoy">🛟</div>
+      <div class="island-palm">🌴</div>
+      <div class="island-castaway" id="castaway">🧍</div>
+      <div class="island-shape"></div>
+      <div class="island-water" id="island-water"></div>
+    </div>
+    <div class="race-feedback" id="island-feedback"></div>
+
     <div class="card question-box">
       <div class="question-text" id="q-prompt"></div>
     </div>
@@ -67,12 +81,12 @@
   <section id="result-section" style="display:none;">
     <div class="card center">
       <div style="font-size: 3rem;" id="result-emoji">🎉</div>
-      <h2 id="result-title">Hoàn thành!</h2>
+      <h2 id="result-title">Được cứu rồi!</h2>
       <div class="result-score" id="result-score"></div>
       <p class="result-detail" id="result-detail"></p>
       <p class="result-message" id="result-message"></p>
       <div class="btn-row">
-        <button id="retry-btn" class="btn btn-primary">Làm lại</button>
+        <button id="retry-btn" class="btn btn-primary">Chơi lại</button>
         <a href="../menu.html" class="btn btn-outline">Về menu chính</a>
       </div>
     </div>
@@ -91,16 +105,21 @@
 <script src="../js/layout.js"></script>
 <script src="../js/cong-tru.js"></script>
 <script>
-  requireProfileOrRedirect();
+  const profile = requireProfileOrRedirect();
   renderAppHeader({ logoHref: '../menu.html', showGreeting: true });
   renderAppFooter();
   renderGreeting('greeting');
+
+  const WATER_MAX_PCT = 82; // % — chừa chỗ để nhân vật/cây dừa không bị nước che khuất hoàn toàn
+  const RESCUE_BONUS_PCT = 4; // mỗi câu đúng đẩy lùi mực nước bấy nhiêu %, tách khỏi mốc thời gian thô
 
   let currentLevel = null;
   let engine = null;
   let timerInterval = null;
   let secondsLeft = 0;
+  let totalSeconds = 0;
   let timeUp = false;
+  let rescueBonus = 0; // tổng % đã đẩy lùi được nhờ trả lời đúng
 
   setupExitConfirm({
     exitBtnId: 'exit-btn',
@@ -112,7 +131,7 @@
   });
 
   document.querySelectorAll('[data-level]').forEach((btn) => {
-    btn.addEventListener('click', () => launchQuiz(btn.dataset.level));
+    btn.addEventListener('click', () => launchGame(btn.dataset.level));
   });
 
   function formatTime(s) {
@@ -121,20 +140,25 @@
     return `${m}:${sec}`;
   }
 
-  function launchQuiz(level) {
+  function launchGame(level) {
     currentLevel = level;
     timeUp = false;
+    rescueBonus = 0;
     const questions = buildCongTruQuiz(level, 15);
-    secondsLeft = SPEED_CHALLENGE_SECONDS[level];
+    totalSeconds = SPEED_CHALLENGE_SECONDS[level];
+    secondsLeft = totalSeconds;
 
     document.getElementById('setup-section').style.display = 'none';
     document.getElementById('result-section').style.display = 'none';
     document.getElementById('quiz-section').style.display = 'block';
+    document.getElementById('island-feedback').textContent = '';
     updateTimerDisplay();
+    updateWaterLevel();
 
     engine = new QuizEngine({
       questions,
-      onFinish: (score, total) => finishQuiz(score, total),
+      onAnswered: (isCorrect) => onAnswered(isCorrect),
+      onFinish: (score, total) => finishGame(score, total),
     });
     engine.start();
 
@@ -145,13 +169,42 @@
   function tick() {
     secondsLeft--;
     updateTimerDisplay();
+    updateWaterLevel();
     if (secondsLeft <= 0) {
       clearInterval(timerInterval);
       timeUp = true;
       engine.stop();
       ToanVuiSound.playFinish();
-      finishQuiz(engine.score, engine.questions.length);
+      finishGame(engine.score, engine.questions.length);
     }
+  }
+
+  function onAnswered(isCorrect) {
+    const feedbackEl = document.getElementById('island-feedback');
+    if (isCorrect) {
+      rescueBonus += RESCUE_BONUS_PCT;
+      showLifebuoyThrow();
+      feedbackEl.textContent = 'Ném phao trúng rồi, nước rút xuống chút! 🛟';
+    } else {
+      feedbackEl.textContent = 'Chưa kịp ném phao, nước vẫn đang dâng! 💦';
+    }
+    updateWaterLevel();
+  }
+
+  function updateWaterLevel() {
+    const elapsedPct = ((totalSeconds - secondsLeft) / totalSeconds) * 100;
+    const pct = Math.max(0, Math.min(WATER_MAX_PCT, elapsedPct - rescueBonus));
+    document.getElementById('island-water').style.height = pct + '%';
+    document.getElementById('water-level-label').textContent = Math.round(pct) + '%';
+  }
+
+  function showLifebuoyThrow() {
+    const el = document.getElementById('lifebuoy');
+    el.classList.remove('show');
+    // Buộc reflow để lặp lại animation nếu 2 câu đúng liên tiếp trong thời gian ngắn.
+    void el.offsetWidth;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 600);
   }
 
   function updateTimerDisplay() {
@@ -160,24 +213,24 @@
     el.classList.toggle('warning', secondsLeft <= 20);
   }
 
-  function finishQuiz(score, total) {
+  function finishGame(score, total) {
     clearInterval(timerInterval);
     showResultSection();
     const scaledScore = Math.round((score / total) * 10);
 
-    document.getElementById('result-emoji').textContent = timeUp ? '⏰' : '🎉';
-    document.getElementById('result-title').textContent = timeUp ? 'Hết giờ rồi!' : 'Hoàn thành!';
+    document.getElementById('result-emoji').textContent = timeUp ? '🌊' : '🎉';
+    document.getElementById('result-title').textContent = timeUp ? 'Đảo chìm mất rồi!' : 'Được cứu rồi!';
 
     renderResultScreen({
       score,
       total,
       scaledScore,
       message: timeUp
-        ? `Bạn làm được ${score}/${total} câu trước khi hết giờ. Luyện thêm để nhanh hơn nhé! ⚡`
+        ? `Bạn ném được ${score}/${total} phao trước khi đảo chìm. Luyện thêm để nhanh hơn nhé! 🏝️`
         : undefined,
     });
     recordQuizCompletion({
-      module: 'thu-thach-toc-do',
+      module: 'dao-chim',
       levelLabel: currentLevel === 'vua' ? 'Vừa' : 'Khó',
       score,
       total,
@@ -185,7 +238,7 @@
     });
   }
 
-  document.getElementById('retry-btn').addEventListener('click', () => launchQuiz(currentLevel));
+  document.getElementById('retry-btn').addEventListener('click', () => launchGame(currentLevel));
 </script>
 </body>
 </html>

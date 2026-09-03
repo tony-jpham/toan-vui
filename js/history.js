@@ -9,6 +9,7 @@ const HISTORY_MODULE_LABELS = {
   'dua-xe': 'Đua xe',
   'leo-nui': 'Leo núi',
   'cau-ca': 'Câu cá',
+  'dao-chim': 'Đảo Chìm',
 };
 
 function pruneHistory(entries) {
